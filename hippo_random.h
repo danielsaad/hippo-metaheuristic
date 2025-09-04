@@ -15,6 +15,10 @@ class normal_dist {
         m_gen = std::mt19937(std::random_device{}());
         m_dist = std::normal_distribution<double>(m_mean, m_udev);
     }
+
+    double generate(){
+        return m_dist(m_gen);
+    }
     /**
      * @brief  Generate a matrix of n x m normal random variables
      *
@@ -33,7 +37,7 @@ class normal_dist {
     }
 
   private:
-    std::mt19937 m_gen;
+    static std::mt19937 m_gen = std::mt19937(std::random_device{}());
     std::normal_distribution<double> m_dist;
     double m_mean, m_udev;
 };
@@ -42,12 +46,20 @@ class normal_dist {
  * @brief  Implements the uniform distribution generator
  *
  */
-template <class T = double> class uniform_dist {
+template <class T> class uniform_dist {
   public:
-    uniform_dist(T lb, T ub) : lb(lb), ub(ub) {
-        m_gen = std::mt19937(std::random_device{}());
-        m_dist = std::uniform_real_distribution<T>(lb, ub);
-    }
+    using dist_type = typename std::conditional<std::is_integral<T>::value, std::uniform_int_distribution<T>,
+                                                std::uniform_real_distribution<T>>::type;
+
+    /**
+     * @brief Construct a new uniform dist object. If T is real, then
+     * the considered interval is [lb,ub). If T is integer, then the considered
+     * interval is [lb,ub]
+     *
+     * @param lb  the lower bound
+     * @param ub  the upper bound
+     */
+    uniform_dist(T lb, T ub) : lb(lb), ub(ub) { m_dist = dist_type(lb, ub); }
 
     T generate() { return m_dist(m_gen); }
     /**
@@ -81,8 +93,8 @@ template <class T = double> class uniform_dist {
     }
 
   private:
-    std::mt19937 m_gen;
-    std::uniform_real_distribution<T> m_dist;
+    static std::mt19937 m_gen = std::mt19937(std::random_device{}());
+    dist_type m_dist;
     T lb, ub;
 };
 

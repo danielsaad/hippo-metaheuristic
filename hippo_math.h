@@ -8,12 +8,6 @@ using vvd = std::vector<std::vector<double>>;
 
 vvd levy(size_t n, size_t m, double beta);
 
-vvd filter(const vvd &population, const std::vector<int> &idx) {
-    vvd filtered_population;
-    for (const auto &i : idx) {
-        filtered_population.emplace_back(population[i]);
-    }
-    return filtered_population;
-}
+vvd filter(const vvd &population, const std::vector<int> &idx);
 
 #endif // HIPPO_MATH_H

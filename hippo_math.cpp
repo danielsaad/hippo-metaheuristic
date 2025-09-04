@@ -35,3 +35,11 @@ vvd levy(size_t n, size_t m, double beta) {
 
     return z_matrix;
 }
+
+vvd filter(const vvd &population, const std::vector<int> &idx) {
+    vvd filtered_population;
+    for (const auto &i : idx) {
+        filtered_population.emplace_back(population[i]);
+    }
+    return filtered_population;
+}
