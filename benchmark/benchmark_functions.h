@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 using vd = std::vector<double>;
+using std::string;
 
 class benchmark_function {
   public:
@@ -13,6 +14,8 @@ class benchmark_function {
     vd lowerbound;
     vd upperbound;
     fun f;
+    virtual string name() const = 0;
+    virtual string description() const = 0;
     virtual void set_f() = 0;
     std::tuple<uint32_t, vd, vd, fun> get_info() const {
         return std::make_tuple(n_dimensions, lowerbound, upperbound, f);
@@ -20,27 +23,46 @@ class benchmark_function {
 };
 
 class sphere_function : public benchmark_function {
-    public:
-        sphere_function();
-        void set_f() override;
+  public:
+    sphere_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
 };
-
 
 class rosenbrock_function : public benchmark_function {
   public:
     rosenbrock_function();
+    string name() const override;
+    string description() const override;
     void set_f() override;
 };
 
 class rastrigin_function : public benchmark_function {
   public:
     rastrigin_function();
+    string name() const override;
+    string description() const override;
     void set_f() override;
 };
 
 class goldstein_price_function : public benchmark_function {
   public:
     goldstein_price_function();
+    string name() const override;
+    string description() const override;
     void set_f() override;
 };
+
+/**
+ * @brief  Shiftged Schwefel function
+ */
+class schwefel_function : public benchmark_function {
+  public:
+    schwefel_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
 #endif // BENCHMARK_FUNCTIONS_H
