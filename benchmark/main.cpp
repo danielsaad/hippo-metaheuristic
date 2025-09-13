@@ -5,8 +5,10 @@
 int main() {
     const int n_hippo = 16;
     const int max_iterations = 500;
-    vector<int> function_types = {SPHERE,   ROSENBROCK,   RASTRIGIN, GOLDSTEIN_PRICE,
-                                  SCHWEFEL, SCHWEFEL_222, EASON};
+    // vector<int> function_types = {
+    //     SPHERE, ROSENBROCK,  RASTRIGIN,       GOLDSTEIN_PRICE,         SCHWEFEL, SCHWEFEL_222,
+    //     EASON,  MICHALEWICZ, HYPER_ELLIPSOID, ROTATED_HYPER_ELLIPSOID, ACKLEY, BRANIN, SIX_HUMP_CAMEL};
+    vector<int> function_types = {SIX_HUMP_CAMEL};
     for (const auto &t : function_types) {
         auto benchmark_function = benchmark_function_factory::create(t);
         std::cout << "Evaluating function " << benchmark_function->name() << "\n";

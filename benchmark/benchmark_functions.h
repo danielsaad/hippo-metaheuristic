@@ -3,8 +3,8 @@
 
 #include "function.h"
 #include <cstdint>
-#include <vector>
 #include <string>
+#include <vector>
 using vd = std::vector<double>;
 using std::string;
 
@@ -77,9 +77,65 @@ class schwefel_222_function : public benchmark_function {
 /**
  * @brief Eason's Function. Global minimum f(x)=-1 at (pi,pi)
  */
-class eason_function:public benchmark_function{
+class eason_function : public benchmark_function {
   public:
     eason_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+class michalewicz_function : public benchmark_function {
+  public:
+    michalewicz_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+class hyper_ellipsoid_function : public benchmark_function {
+  public:
+    hyper_ellipsoid_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+class rotated_hyper_ellipsoid_function : public benchmark_function {
+  public:
+    rotated_hyper_ellipsoid_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+class ackley_function : public benchmark_function {
+  public:
+    ackley_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+class griewank_function : public benchmark_function {
+  public:
+    griewank_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+class branin_function : public benchmark_function {
+  public:
+    branin_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+
+class six_hump_camel_function : public benchmark_function {
+  public:
+    six_hump_camel_function();
     string name() const override;
     string description() const override;
     void set_f() override;
