@@ -2,8 +2,6 @@
 #include <cmath>
 #include <string>
 
-using std::string;
-
 sphere_function::sphere_function() {
     n_dimensions = 30;
     lowerbound = vd(n_dimensions, -100.0);
@@ -11,9 +9,9 @@ sphere_function::sphere_function() {
     set_f();
 }
 
-std::string sphere_function::name() const { return "Sphere Function"; }
+string sphere_function::name() const { return "Sphere Function"; }
 
-std::string sphere_function::description() const { return "Sphere function"; }
+string sphere_function::description() const { return "Sphere function"; }
 
 void sphere_function::set_f() {
     f = [](const vd &x) {
@@ -109,8 +107,49 @@ void schwefel_function::set_f() {
     f = [](const vd &x) {
         double sum = 0.0;
         for (double xi : x) {
-            sum += xi * sin(sqrt(fabs(xi)));
+            sum += -xi * sin(sqrt(fabs(xi)));
         }
-        return -sum;
+        return sum;
     };
+}
+
+schwefel_222_function::schwefel_222_function() {
+    n_dimensions = 30;
+    lowerbound = vd(n_dimensions, -100.0);
+    upperbound = vd(n_dimensions, 100.0);
+    set_f();
+}
+
+string schwefel_222_function::name() const { return "Schwefel's Problem 2.22 Function"; }
+
+string schwefel_222_function::description() const {
+    return "Schwefel's Problem 2.22 function. It rounds each variable to the nearest integer.";
+}
+
+void schwefel_222_function::set_f() {
+    f = [](const vd &x) {
+        double sum = 0.0;
+        for (double xi : x) {
+            sum += pow(floor(xi + 0.5), 2);
+        }
+        return sum;
+    };
+}
+
+eason_function::eason_function() {
+    n_dimensions = 2;
+    lowerbound = vd(n_dimensions, -100.0);
+    upperbound = vd(n_dimensions, 100.0);
+    set_f();
+}
+
+string eason_function::name() const { return "Eason's Function"; }
+
+string eason_function::description() const {
+    return "Eason's Function. Global minimum f(x)=-1 at (pi,pi). It is like a black-hole affecting the "
+           "space-time, overall planar, but with a singularity at (pi,pi).";
+}
+
+void eason_function::set_f() {
+    f = [](const vd &x) { return pow(x[0] - M_PI, 2) + pow(x[1] - M_PI, 2); };
 }

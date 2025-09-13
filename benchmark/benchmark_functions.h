@@ -4,6 +4,7 @@
 #include "function.h"
 #include <cstdint>
 #include <vector>
+#include <string>
 using vd = std::vector<double>;
 using std::string;
 
@@ -55,11 +56,30 @@ class goldstein_price_function : public benchmark_function {
 };
 
 /**
- * @brief  Shiftged Schwefel function
+ * @brief  Shifted Schwefel function
  */
 class schwefel_function : public benchmark_function {
   public:
     schwefel_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+class schwefel_222_function : public benchmark_function {
+  public:
+    schwefel_222_function();
+    string name() const override;
+    string description() const override;
+    void set_f() override;
+};
+
+/**
+ * @brief Eason's Function. Global minimum f(x)=-1 at (pi,pi)
+ */
+class eason_function:public benchmark_function{
+  public:
+    eason_function();
     string name() const override;
     string description() const override;
     void set_f() override;

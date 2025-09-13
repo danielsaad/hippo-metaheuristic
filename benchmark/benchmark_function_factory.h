@@ -3,7 +3,7 @@
 #include "benchmark_functions.h"
 #include <memory>
 
-enum { SPHERE = 1, ROSENBROCK, RASTRIGIN, GOLDSTEIN_PRICE, SCHWEFEL };
+enum { SPHERE = 1, ROSENBROCK, RASTRIGIN, GOLDSTEIN_PRICE, SCHWEFEL, SCHWEFEL_222, EASON };
 
 class benchmark_function_factory {
   public:
@@ -19,6 +19,10 @@ class benchmark_function_factory {
             return std::make_unique<goldstein_price_function>();
         case SCHWEFEL:
             return std::make_unique<schwefel_function>();
+        case SCHWEFEL_222:
+            return std::make_unique<schwefel_222_function>();
+        case EASON:
+            return std::make_unique<eason_function>();
         default:
             return nullptr;
         }

@@ -5,8 +5,8 @@
 int main() {
     const int n_hippo = 16;
     const int max_iterations = 500;
-    // vector<int> function_types = {SPHERE, ROSENBROCK, RASTRIGIN, GOLDSTEIN_PRICE, SCHWEFEL};
-    vector<int> function_types = {SCHWEFEL};
+    vector<int> function_types = {SPHERE,   ROSENBROCK,   RASTRIGIN, GOLDSTEIN_PRICE,
+                                  SCHWEFEL, SCHWEFEL_222, EASON};
     for (const auto &t : function_types) {
         auto benchmark_function = benchmark_function_factory::create(t);
         std::cout << "Evaluating function " << benchmark_function->name() << "\n";

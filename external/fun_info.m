@@ -164,7 +164,7 @@ function R = F5(x)
 dimension=size(x,2);
 R=sum(100*(x(2:dimension)-(x(1:dimension-1).^2)).^2+(x(1:dimension-1)-1).^2);
 end
-% F6
+% F6 Schwefell 2.22 function
 function R = F6(x)
 R=sum(floor((x+.5)).^2);
 end
@@ -173,7 +173,7 @@ function R = F7(x)
 dimension=size(x,2);
 R=sum([1:dimension].*(x.^4))+rand;
 end
-% F8
+% F8 Shifted Schwefell function
 function R = F8(x)
 R=sum(-x.*sin(sqrt(abs(x))));
 end
