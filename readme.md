@@ -11,7 +11,7 @@ make
 
 You can run this metaheuristic with several benchmark functions by issuing the command.
 ```bash
-./bin/benchmark`
+./bin/benchmark
 ```
 
 ## Experiments
