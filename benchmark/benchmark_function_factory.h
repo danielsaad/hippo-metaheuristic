@@ -21,8 +21,8 @@ enum {
 };
 
 class benchmark_function_factory {
-    public:
-        static std::unique_ptr<benchmark_function> create(int type);
+  public:
+    static std::unique_ptr<benchmark_function> create(int type);
 };
 
 #endif

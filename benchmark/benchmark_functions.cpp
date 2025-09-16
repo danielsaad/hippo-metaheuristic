@@ -106,10 +106,10 @@ string schwefel_function::description() const {
 void schwefel_function::set_f() {
     f = [](const vd &x) {
         double sum = 0.0;
-        for (double xi : x) {
-            sum += -xi * sin(sqrt(fabs(xi)));
+        for (const auto xi : x) {
+            sum += xi * sin(sqrt(fabs(xi)));
         }
-        return sum;
+        return 418.9829 * x.size() - sum;
     };
 }
 
