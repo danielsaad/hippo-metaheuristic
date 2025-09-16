@@ -31,11 +31,13 @@ void hippo_optimizer::run() {
         explore(best_idx, t);
         defend();
         escape(t);
+        best_fitness = fbest_global;
+        best_solution = best_global;
         std::cout << "Best so far " << fbest_global << " (";
         for (const auto &hippo : best_global) {
             std::cout << hippo << " ";
         }
-        std::cout << ") at iteration " << t + 1 << "\n ";
+        std::cout << ") at iteration " << t + 1 << "\n";
     }
 }
 
@@ -229,4 +231,8 @@ void hippo_optimizer::escape(uint32_t iteration) {
             fitness_vector[i] = fitness_p4;
         }
     }
+}
+
+std::tuple<vector<double>, double> hippo_optimizer::get_best_solution() const {
+    return {best_solution, best_fitness};
 }

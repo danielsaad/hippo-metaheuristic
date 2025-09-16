@@ -15,6 +15,7 @@ class hippo_optimizer {
     hippo_optimizer(uint32_t n_hippo, uint32_t max_iterations, double lowerbound, double upperbound,
                     uint32_t n_dimensions, const fun &fitness);
     void run();
+    std::tuple<vector<double>, double> get_best_solution() const; 
 
   private:
     // initial parameters
@@ -23,6 +24,8 @@ class hippo_optimizer {
     double lowerbound;
     double upperbound;
     uint32_t n_dimensions;
+    double best_fitness = std::numeric_limits<double>::max();
+    vector<double> best_solution;
     fun fitness;
 
     // data structures
@@ -36,7 +39,5 @@ class hippo_optimizer {
     void defend();
     void escape(uint32_t iteration);
 };
-
-
 
 #endif // HIPPO_OPTIMIZER_H
