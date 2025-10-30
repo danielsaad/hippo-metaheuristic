@@ -114,11 +114,9 @@ void hippo_optimizer::explore(uint32_t best_idx, uint32_t iteration) {
         auto &alfa_a = alfa_matrix[uniform_dist<int>(0, 4).generate()];
         auto &alfa_b = alfa_matrix[uniform_dist<int>(0, 4).generate()];
 
+        double r = uniform_dist<double>(0, 1).generate();
         for (size_t j = 0; j < population_p1[i].size(); j++) {
-            double r = uniform_dist<double>(0, 1).generate();
-            population_p1[i][j] = population[i][j] + r;
-            double res = (dominant_hippo[j] - r1 * population[i][j]);
-            population_p1[i][j] *= res;
+            population_p1[i][j] = population[i][j] + r * (dominant_hippo[j] - r1 * population[i][j]);
         }
 
         double t = std::exp((double)-iteration / (max_iterations - 1)); // 0-based indexing
@@ -161,14 +159,14 @@ void hippo_optimizer::explore(uint32_t best_idx, uint32_t iteration) {
 void hippo_optimizer::defend() {
     for (size_t i = n_hippo / 2; i < n_hippo; i++) {
         vector<double> predator(n_dimensions);
+        double r = uniform_dist<double>(0, 1).generate();
         for (auto &p : predator) {
-            double r = uniform_dist<double>(0, 1).generate();
             p = lowerbound + r * (upperbound - lowerbound);
         }
         auto fitness_hl = fitness(predator);
         vector<double> distance_to_leader(n_dimensions);
         for (size_t j = 0; j < distance_to_leader.size(); j++) {
-            distance_to_leader[j] = abs(predator[j] - population[i][j]);
+            distance_to_leader[j] = std::abs(predator[j] - population[i][j]);
         }
         auto b = uniform_dist<double>(2, std::nextafter(4, std::numeric_limits<double>::max())).generate();
         auto c = uniform_dist<double>(1, std::nextafter(1.5, std::numeric_limits<double>::max())).generate();
