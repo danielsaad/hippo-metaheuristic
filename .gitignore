@@ -52,3 +52,8 @@ build/
 # CSV files
 
 *.csv
+
+# Binaries
+
+benchmark/benchmark
+test/test_random
