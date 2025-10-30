@@ -136,6 +136,9 @@ void hippo_optimizer::explore(uint32_t best_idx, uint32_t iteration) {
             }
         }
 
+        for (size_t j = 0; j < population_p1[i].size(); j++) {
+            population_p1[i][j] = std::min(std::max(population_p1[i][j], lowerbound), upperbound);
+        }
         for (size_t j = 0; j < population_p2[i].size(); j++) {
             population_p2[i][j] = std::min(std::max(population_p2[i][j], lowerbound), upperbound);
         }
