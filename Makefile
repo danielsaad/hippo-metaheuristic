@@ -6,7 +6,7 @@ INCLUDES = -Iinclude
 SRC_DIR = src
 APP_DIR = apps
 OBJ_DIR = build/obj
-BIN_DIR = build/bin
+BIN_DIR = bin
 
 # Recursive source discovery
 SRC = $(shell find $(SRC_DIR) -name '*.cpp')
