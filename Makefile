@@ -1,62 +1,33 @@
-# Compiler and flags
-CXX := g++
-CXXFLAGS := -std=c++20  -Wall -Wextra -O2
+CXX = g++
+# CXXFLAGS = -std=c++23 -Wall -Wextra -O2 -MMD -MP
+CXXFLAGS = -std=c++23 -Wall -Wextra -g -MMD -MP
+INCLUDES = -Iinclude
 
-# Directories
-SRC_DIR := src
-BENCHMARK_DIR := benchmark
-TEST_DIR := test
-BUILD_DIR := build
-BIN_DIR := bin
-INCLUDE_DIR := include
+SRC_DIR = src
+APP_DIR = apps
+OBJ_DIR = build/obj
+BIN_DIR = build/bin
 
-# Source files
-SRC := $(wildcard $(SRC_DIR)/*.cpp) 
-BENCHMARK_SRC := $(wildcard $(BENCHMARK_DIR)/src/*.cpp)
+# Recursive source discovery
+SRC = $(shell find $(SRC_DIR) -name '*.cpp')
+OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
-BENCHMARK_APP := $(wildcard $(BENCHMARK_DIR)/*.cpp) 
-TEST_APP := $(wildcard $(TEST_DIR)/*.cpp)
+APP_SRC = $(shell find $(APP_DIR) -name '*.cpp')
+APPS = $(patsubst $(APP_DIR)/%.cpp,$(BIN_DIR)/%,$(APP_SRC))
 
-# Object files
-OBJECTS := $(patsubst %.cpp,$(BUILD_DIR)/src/%.o,$(notdir $(wildcard $(SRC_DIR)/*.cpp))) 
-BENCHMARK_OBJECTS := $(patsubst %.cpp,$(BUILD_DIR)/benchmark/%.o,$(notdir $(wildcard $(BENCHMARK_DIR)/src/*.cpp)))
-TEST_OBJECTS := $(patsubst %.cpp,$(BUILD_DIR)/test/%.o,$(notdir $(wildcard $(TEST_DIR)/src/*.cpp)))
+all: $(APPS)
 
+# Build executables
+$(BIN_DIR)/%: $(APP_DIR)/%.cpp $(OBJ)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-BENCHMARK_BIN:= $(patsubst %.cpp,$(BENCHMARK_DIR)/%,$(notdir $(wildcard $(BENCHMARK_DIR)/*.cpp)))
-TEST_BIN:= $(patsubst %.cpp,$(TEST_DIR)/%,$(notdir $(wildcard $(TEST_DIR)/*.cpp)))
-# Default target
-
-all: $(BENCHMARK_BIN) $(TEST_BIN)
-
-# Rule to link the executable
-$(BENCHMARK_BIN): $(BENCHMARK_APP) $(BENCHMARK_OBJECTS) $(OBJECTS) 
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -I$(BENCHMARK_DIR)/include  $^ -o $@
-
-$(TEST_BIN): $(TEST_APP)  $(OBJECTS) 
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) $^ -o $@
-
-# Rule to link the executable
-$(TEST_EXECUTABLE): $(OBJECTS)
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(OBJECTS) -o $@
-
-# Rule to compile source files into object files
-$(BUILD_DIR)/src/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(BUILD_DIR)/src
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
-
-$(BUILD_DIR)/benchmark/%.o: $(BENCHMARK_DIR)/src/%.cpp
-	@mkdir -p $(BUILD_DIR)/benchmark
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -I$(BENCHMARK_DIR)/include -c $< -o $@
-
-$(BUILD_DIR)/test/%.o: $(TEST_DIR)/%.cpp
-	@mkdir -p $(BUILD_DIR)/$(TEST_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Compile source files (preserve subdirectories)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -rf $(BUILD_DIR) $(BIN_DIR)
+	rm -rf build
 
-.PHONY: all clean
+-include $(OBJ:.o=.d)

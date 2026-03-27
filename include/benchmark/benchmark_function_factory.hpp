@@ -1,6 +1,6 @@
 #ifndef BENCHMARK_FUNCTION_FACTORY_H
 #define BENCHMARK_FUNCTION_FACTORY_H
-#include "benchmark_functions.h"
+#include "benchmark_functions.hpp"
 #include <memory>
 
 enum {
@@ -20,9 +20,9 @@ enum {
     SIX_HUMP_CAMEL
 };
 
-class benchmark_function_factory {
+class BenchmarkFunctionFactory {
   public:
-    static std::unique_ptr<benchmark_function> create(int type);
+    static std::unique_ptr<BenchmarkFunctionBase> create(int type);
 };
 
 #endif

@@ -1,5 +1,5 @@
-#include "hippo_math.h"
-#include "hippo_random.h"
+#include "ho/hippo_math.hpp"
+#include "ho/hippo_random.hpp"
 #include <cmath>
 #include <numbers>
 #include <random>
@@ -21,8 +21,8 @@ vvd levy(size_t n, size_t m, double beta) {
     double den = tgamma((1 + beta) / 2) * beta * pow(2, (beta - 1) / 2);
     double sigma_u = pow(num / den, 1 / beta);
 
-    normal_dist nd_sdev(0, sigma_u);
-    normal_dist nd;
+    NormalDist nd_sdev(0, sigma_u);
+    NormalDist nd;
     auto u_matrix = nd_sdev.generate_normal_dist_matrix(n, m);
     auto v_matrix = nd.generate_normal_dist_matrix(n, m);
     vvd z_matrix(n, std::vector<double>(m));

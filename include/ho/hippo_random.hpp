@@ -11,9 +11,9 @@ using vvd = std::vector<std::vector<double>>;
 /**
  * @brief  Implements the normal distribution generator
  */
-class normal_dist {
+class NormalDist {
   public:
-    normal_dist(double mean = 0.0, double udev = 1.0);
+    NormalDist(double mean = 0.0, double udev = 1.0);
     double generate();
     vvd generate_normal_dist_matrix(size_t n, size_t m);
 
@@ -25,12 +25,12 @@ class normal_dist {
 /**
  * @brief  Implements the uniform distribution generator
  */
-template <class T> class uniform_dist {
+template <class T> class UniformDist {
   public:
     using dist_type = typename std::conditional<std::is_integral<T>::value, std::uniform_int_distribution<T>,
                                                 std::uniform_real_distribution<T>>::type;
 
-    uniform_dist(T lb, T ub);
+    UniformDist(T lb, T ub);
     T generate();
     std::vector<T> generate_uniform_dist_vector(size_t n);
     std::vector<std::vector<T>> generate_uniform_dist_matrix(size_t n, size_t m);
@@ -40,11 +40,11 @@ template <class T> class uniform_dist {
     T lb, ub;
 };
 
-template <class T> uniform_dist<T>::uniform_dist(T lb, T ub) : lb(lb), ub(ub) { m_dist = dist_type(lb, ub); }
+template <class T> UniformDist<T>::UniformDist(T lb, T ub) : lb(lb), ub(ub) { m_dist = dist_type(lb, ub); }
 
-template <class T> T uniform_dist<T>::generate() { return m_dist(hippo_rng); }
+template <class T> T UniformDist<T>::generate() { return m_dist(hippo_rng); }
 
-template <class T> std::vector<T> uniform_dist<T>::generate_uniform_dist_vector(size_t n) {
+template <class T> std::vector<T> UniformDist<T>::generate_uniform_dist_vector(size_t n) {
     std::vector<T> v(n);
     for (auto &x : v) {
         x = m_dist(hippo_rng);
@@ -53,7 +53,7 @@ template <class T> std::vector<T> uniform_dist<T>::generate_uniform_dist_vector(
 }
 
 template <class T>
-std::vector<std::vector<T>> uniform_dist<T>::generate_uniform_dist_matrix(size_t n, size_t m) {
+std::vector<std::vector<T>> UniformDist<T>::generate_uniform_dist_matrix(size_t n, size_t m) {
     std::vector<std::vector<T>> mat(n, std::vector<T>(m));
     for (size_t i = 0; i < n; ++i) {
         for (size_t j = 0; j < m; ++j) {
@@ -63,10 +63,10 @@ std::vector<std::vector<T>> uniform_dist<T>::generate_uniform_dist_matrix(size_t
     return mat;
 }
 
-class random_permutation {
+class RandomPermutation {
 
   public:
-    random_permutation(uint32_t n);
+    RandomPermutation(uint32_t n);
     std::vector<int> generate();
     std::vector<int> generate(int k);
 
