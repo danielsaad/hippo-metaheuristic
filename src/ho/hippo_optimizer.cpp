@@ -9,8 +9,9 @@ HippoOptimizer::HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
     : OptimizerBase(n_hippo, max_iterations, std::move(objective_function)), n_hippo(n_hippo) {
     lowerbound_ = objective_function_->lowerbound()[0]; // Assuming all dimensions have the same bounds
     upperbound_ = objective_function_->upperbound()[0];
-    std::cout << "Initialized HippoOptimizer with " << n_hippo << " hippos, max iterations: " << max_iterations_
-              << ", lower bound: " << lowerbound_ << ", upper bound: " << upperbound_ << "\n";
+    std::cout << "Initialized HippoOptimizer with " << n_hippo
+              << " hippos, max iterations: " << max_iterations_ << ", lower bound: " << lowerbound_
+              << ", upper bound: " << upperbound_ << "\n";
     n_hippo = n_agents_;
     n_dimensions_ = objective_function_->n_dimensions();
     fitness_function = [this](const vector<double> &x) { return objective_function_->evaluate(x); };
@@ -18,13 +19,14 @@ HippoOptimizer::HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
 
 void HippoOptimizer::run() {
     initialize();
-    std::cout << "Running HippoOptimizer...\n" << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_ << " dimensions.\n";
+    std::cout << "Running HippoOptimizer...\n"
+              << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_
+              << " dimensions.\n";
     vector<double> best_global; // best hippo globally
     double fbest_global;        // best fitness globally
     uint32_t best_idx_global;   // best idx globally
     // main loop
     for (uint32_t t = 0; t < max_iterations_; t++) {
-        std::cout << "Iteration " << t + 1 << "/" << max_iterations_ << "\n";
         vector<double> best;
         double fbest;
         uint32_t best_idx;
@@ -42,14 +44,46 @@ void HippoOptimizer::run() {
         escape(t);
         best_fitness_ = fbest_global;
         best_solution_ = best_global;
-        std::cout << "Best so far " << fbest_global << " (";
-        for (const auto &hippo : best_global) {
-            std::cout << hippo << " ";
-        }
-        std::cout << ") at iteration " << t + 1 << "\n";
     }
 }
 
+std::vector<std::tuple<std::vector<double>, double>> HippoOptimizer::get_population_and_fitness() const {
+    std::vector<std::tuple<std::vector<double>, double>> population_with_fitness;
+    for (size_t i = 0; i < population.size(); i++) {
+        population_with_fitness.emplace_back(population[i], fitness_vector[i]);
+    }
+    return population_with_fitness;
+}
+
+void HippoOptimizer::migrate_and_run(const std::vector<std::vector<double>> &migrated_solutions) {
+    initialize(migrated_solutions);
+    std::cout << "Running HippoOptimizer...\n"
+              << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_
+              << " dimensions." << "with " << migrated_solutions.size() << " migrated solutions\n";
+    vector<double> best_global; // best hippo globally
+    double fbest_global;        // best fitness globally
+    uint32_t best_idx_global;   // best idx globally
+    // main loop
+    for (uint32_t t = 0; t < max_iterations_; t++) {
+        vector<double> best;
+        double fbest;
+        uint32_t best_idx;
+        // get best solution
+        auto it = std::min_element(fitness_vector.begin(), fitness_vector.end());
+        fbest = *it;
+        best_idx = std::distance(fitness_vector.begin(), it);
+        if (t == 0 or fbest < fbest_global) {
+            fbest_global = fbest;
+            best_idx_global = best_idx;
+            best_global = population[best_idx_global];
+        }
+        explore(best_idx, t);
+        defend();
+        escape(t);
+        best_fitness_ = fbest_global;
+        best_solution_ = best_global;
+    }
+}
 /**
  * @brief  Phase 1 of the optimization. Update hippos positions in the river or pond.
  * @param  best_idx index of the best hippo
@@ -69,6 +103,19 @@ void HippoOptimizer::initialize() {
     }
     fitness_vector.resize(n_hippo);
     for (size_t i = 0; i < n_hippo; i++) {
+        fitness_vector[i] = fitness_function(population[i]);
+    }
+}
+
+/**
+ * @brief  Phase 1 of the optimization. Update hippos positions in the river or pond.
+ * @param  best_idx index of the best hippo
+ * @param iteration currenct iteration
+ **/
+void HippoOptimizer::initialize(const vector<std::vector<double>> &migrated_solutions) {
+    // Initialize the population with the migrated solutions
+    for (size_t i = 0; i < std::min(migrated_solutions.size(), population.size()); i++) {
+        population[i] = migrated_solutions[i];
         fitness_vector[i] = fitness_function(population[i]);
     }
 }

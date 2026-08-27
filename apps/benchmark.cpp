@@ -1,7 +1,8 @@
 #include "benchmark/benchmark_function_factory.hpp"
 #include "benchmark/benchmark_functions.hpp"
-#include "benchmark/optimizer_factory.hpp"
+#include "core/optimizer_factory.hpp"
 #include <map>
+#include <iostream>
 
 std::map<int, string> optimizer_names = {
     {1, "HO"},

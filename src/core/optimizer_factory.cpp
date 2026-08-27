@@ -1,4 +1,7 @@
-#include "benchmark/optimizer_factory.hpp"
+#include "core/optimizer_factory.hpp"
+
+#include "ho/hippo_optimizer.hpp"
+#include "woa/woa.hpp"
 
 std::unique_ptr<OptimizerBase>
 OptimizerFactory::create(int type, size_t n_agents, size_t max_iterations,

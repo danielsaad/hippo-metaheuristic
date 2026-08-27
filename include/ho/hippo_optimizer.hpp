@@ -17,7 +17,9 @@ class HippoOptimizer : public OptimizerBase {
     HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
                    std::unique_ptr<ProblemBase> objective_function);
 
-    void run();
+    void run() override;
+    void migrate_and_run(const std::vector<std::vector<double>> &migrated_solutions) override;
+    std::vector<std::tuple<std::vector<double>, double>> get_population_and_fitness() const override;
 
   private:
     // initial parameters
@@ -35,6 +37,7 @@ class HippoOptimizer : public OptimizerBase {
     vector<vector<double>> population; // population of hippos
 
     void initialize();
+    void initialize(const vector<std::vector<double>>& migrated_solutions);
     void explore(uint32_t best_idx, uint32_t iteration);
     void defend();
     void escape(uint32_t iteration);
