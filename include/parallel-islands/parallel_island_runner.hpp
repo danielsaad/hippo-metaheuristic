@@ -3,16 +3,17 @@
 
 #include "parallel-islands/homogeneous_island.hpp"
 #include <algorithm>
-#include <memory>
 #include <vector>
 
 class ParallelIslandRunner {
   public:
     ParallelIslandRunner(size_t n_threads, std::vector<HomogeneousIsland> islands, size_t n_migrations)
         : n_threads_(n_threads), n_migrations_(n_migrations), islands_(std::move(islands)) {};
+
     void run();
 
   private:
+    ParallelIslandManager manager_;
     std::vector<std::vector<double>>
     extract_individuals(std::vector<std::tuple<std::vector<double>, double>> population_with_fitness) {
         std::vector<std::vector<double>> individuals;
