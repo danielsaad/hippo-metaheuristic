@@ -57,3 +57,4 @@ build/
 
 benchmark/benchmark
 test/test_random
+compile_commands.json
