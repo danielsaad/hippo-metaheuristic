@@ -16,6 +16,12 @@ You can run this metaheuristic with several benchmark functions by issuing the c
 ./bin/benchmark
 ```
 
+You can also run the parallel islands implementation with the following command:
+
+```bash
+./bin/parallel_islands
+```
+
 ## Experiments
 
 The following functions were tested:
