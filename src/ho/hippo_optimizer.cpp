@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
-#include <random>
 
 HippoOptimizer::HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
                                std::unique_ptr<ProblemBase> objective_function)
@@ -17,8 +16,10 @@ HippoOptimizer::HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
     fitness_function = [this](const vector<double> &x) { return objective_function_->evaluate(x); };
 }
 
-void HippoOptimizer::run() {
-    initialize();
+void HippoOptimizer::run(bool initialize_flag) {
+    if (initialize_flag) {
+        initialize();
+    }
     std::cout << "Running HippoOptimizer...\n"
               << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_
               << " dimensions.\n";
@@ -47,43 +48,16 @@ void HippoOptimizer::run() {
     }
 }
 
-std::vector<std::tuple<std::vector<double>, double>> HippoOptimizer::get_population_and_fitness() const {
-    std::vector<std::tuple<std::vector<double>, double>> population_with_fitness;
-    for (size_t i = 0; i < population.size(); i++) {
-        population_with_fitness.emplace_back(population[i], fitness_vector[i]);
-    }
-    return population_with_fitness;
+std::tuple<std::vector<vector<double>>, vector<double>> HippoOptimizer::get_population_and_fitness() const {
+    std::tuple<std::tuple<std::vector<double>, double>> population_with_fitness;
+    return make_tuple(population, fitness_vector);
+}
+void HippoOptimizer::set_population_with_fitness(const std::vector<std::vector<double>> &population,
+                                                 const std::vector<double> &fitness) {
+    this->population = population;
+    this->fitness_vector = fitness;
 }
 
-void HippoOptimizer::migrate_and_run(const std::vector<std::vector<double>> &migrated_solutions) {
-    initialize(migrated_solutions);
-    std::cout << "Running HippoOptimizer...\n"
-              << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_
-              << " dimensions." << "with " << migrated_solutions.size() << " migrated solutions\n";
-    vector<double> best_global; // best hippo globally
-    double fbest_global;        // best fitness globally
-    uint32_t best_idx_global;   // best idx globally
-    // main loop
-    for (uint32_t t = 0; t < max_iterations_; t++) {
-        vector<double> best;
-        double fbest;
-        uint32_t best_idx;
-        // get best solution
-        auto it = std::min_element(fitness_vector.begin(), fitness_vector.end());
-        fbest = *it;
-        best_idx = std::distance(fitness_vector.begin(), it);
-        if (t == 0 or fbest < fbest_global) {
-            fbest_global = fbest;
-            best_idx_global = best_idx;
-            best_global = population[best_idx_global];
-        }
-        explore(best_idx, t);
-        defend();
-        escape(t);
-        best_fitness_ = fbest_global;
-        best_solution_ = best_global;
-    }
-}
 /**
  * @brief  Phase 1 of the optimization. Update hippos positions in the river or pond.
  * @param  best_idx index of the best hippo
@@ -112,13 +86,6 @@ void HippoOptimizer::initialize() {
  * @param  best_idx index of the best hippo
  * @param iteration currenct iteration
  **/
-void HippoOptimizer::initialize(const vector<std::vector<double>> &migrated_solutions) {
-    // Initialize the population with the migrated solutions
-    for (size_t i = 0; i < std::min(migrated_solutions.size(), population.size()); i++) {
-        population[i] = migrated_solutions[i];
-        fitness_vector[i] = fitness_function(population[i]);
-    }
-}
 
 void HippoOptimizer::explore(uint32_t best_idx, uint32_t iteration) {
     // Phase 1: exploration. Update hippos positions in the river or pond
@@ -136,8 +103,8 @@ void HippoOptimizer::explore(uint32_t best_idx, uint32_t iteration) {
         // Mean of random group
         vector<double> mean(n_dimensions_, 0.0);
         if (rand_group_n > 1) {
-            for (uint32_t k = 0; k < n_dimensions_; k++) {
-                for (uint32_t j = 0; j < rand_group_n; j++) {
+            for (size_t k = 0; k < n_dimensions_; k++) {
+                for (int j = 0; j < rand_group_n; j++) {
                     mean[k] += population[rand_group[j]][k];
                 }
                 mean[k] /= rand_group_n;

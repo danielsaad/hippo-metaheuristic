@@ -1,14 +1,7 @@
 #include "parallel-islands/homogeneous_island.hpp"
 
-
-void HomogeneousIsland::run() {
-    optimizer_->run();
+void HomogeneousIsland::set_optimizer(std::unique_ptr<OptimizerBase> new_optimizer) {
+    optimizer_ = std::move(new_optimizer);
 }
 
-void HomogeneousIsland::migrate_and_run(const std::vector<std::vector<double>> &migrated_solutions) {
-    optimizer_->migrate_and_run(migrated_solutions);
-}
-
-void HomogeneousIsland::run(const std::vector<std::vector<double>> &migrated_solutions) {
-    optimizer_->migrate_and_run(migrated_solutions);
-}
+void HomogeneousIsland::run(bool initialize_flag) { optimizer_->run(initialize_flag); }

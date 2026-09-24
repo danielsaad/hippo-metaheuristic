@@ -9,7 +9,11 @@
 
 class OptimizerInterface {
   public:
-    virtual void run() = 0;
+    virtual void run(bool initialize = true) = 0;
+    virtual void set_population_with_fitness(const std::vector<std::vector<double>> &population,
+                                             const std::vector<double> &fitness) = 0;
+    virtual std::tuple<std::vector<std::vector<double>>, std::vector<double>>
+    get_population_and_fitness() const = 0;
 };
 
 class OptimizerBase : public OptimizerInterface {
@@ -18,9 +22,6 @@ class OptimizerBase : public OptimizerInterface {
         : n_agents_(n_agents), max_iterations_(max_iterations),
           objective_function_(std::move(objective_function)), convergence_curve_(max_iterations) {}
     virtual ~OptimizerBase() = default;
-    virtual void run() override = 0;
-    virtual std::vector<std::tuple<std::vector<double>, double>> get_population_and_fitness() const = 0;
-    virtual void migrate_and_run(const std::vector<std::vector<double>> &migrated_solutions) = 0;
     std::tuple<vector<double>, double> get_best_solution() const { return {best_solution_, best_fitness_}; }
     std::vector<double> get_convergence_curve() const { return convergence_curve_; }
 

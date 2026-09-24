@@ -8,9 +8,8 @@
 class HomogeneousIsland {
   public:
     HomogeneousIsland(std::unique_ptr<OptimizerBase> optimizer) : optimizer_(std::move(optimizer)) {};
-    void run();
-    void run(const std::vector<std::vector<double>> &migrated_solutions);
-    void migrate_and_run(const std::vector<std::vector<double>> &migrated_solutions);
+    void run(bool initialize_flag = true);
+    void set_optimizer(std::unique_ptr<OptimizerBase> new_optimizer);
 
   public:
     std::unique_ptr<OptimizerBase> optimizer_;

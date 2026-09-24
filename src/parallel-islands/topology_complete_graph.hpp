@@ -4,7 +4,7 @@
 
 class TopologyCompleteGraph : public TopologyPolicyInterface {
   public:
-    TopologyCompleteGraph(size_t n_islands);
+    TopologyCompleteGraph(const vector<HomogeneousIsland> &islands);
     void configure_topology() override;
 };
 
