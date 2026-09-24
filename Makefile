@@ -1,7 +1,7 @@
 CXX = g++
 # CXXFLAGS = -std=c++23 -Wall -Wextra -O2 -MMD -MP
 CXXFLAGS = -std=c++23 -Wall -Wextra -g -MMD -MP
-INCLUDES = -Iinclude
+INCLUDES = -Isrc
 
 SRC_DIR = src
 APP_DIR = apps
