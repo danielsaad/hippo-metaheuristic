@@ -46,7 +46,6 @@ int main(int argc, char **argv) {
         print_usage(argv);
         return 1;
     }
-    std::print("Test\n");
     int function_type = std::atoi(argv[1]);
     size_t n_agents = std::atoi(argv[2]);
     size_t n_generations = std::atoi(argv[3]);

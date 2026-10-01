@@ -1,6 +1,6 @@
 #include "benchmark/benchmark_functions.hpp"
 #include <cmath>
-#include <string>
+#include <numbers>
 
 SphereFunction::SphereFunction() {
     n_dimensions_ = 30;

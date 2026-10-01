@@ -8,6 +8,7 @@
 #include <print>
 #include <random>
 #include <vector>
+#include <numbers>
 class Woa : public OptimizerBase {
   public:
     Woa(uint32_t n_agents, uint32_t max_it, std::unique_ptr<ProblemBase> objective_function)
