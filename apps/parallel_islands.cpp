@@ -4,8 +4,8 @@
 #include "parallel-islands/parallel_island_runner.hpp"
 #include "parallel-islands/replace_worst.hpp"
 #include "parallel-islands/selection_bwr.hpp"
-#include "parallel-islands/topology_complete_tree.hpp"
 #include "parallel-islands/topology_complete_graph.hpp"
+#include "parallel-islands/topology_complete_tree.hpp"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     const int max_it = 60;
     vector<size_t> island_max_it = {max_it, max_it};
     for (size_t i = 0; i < thread_n; i++) {
-        auto opt = OptimizerFactory::create(1 , n_agents, island_max_it[i % 2],
+        auto opt = OptimizerFactory::create(1 + (i % 2), n_agents, island_max_it[i % 2],
                                             BenchmarkFunctionFactory::create(function_type));
         islands.emplace_back(HomogeneousIsland(std::move(opt)));
     }

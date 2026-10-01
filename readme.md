@@ -1,5 +1,12 @@
 # Hippo Metaheuristic
 
+## Cloning
+
+```bash
+git clone --recursive https://github.com/danielsaad.com/hippo-metaheuristic
+```
+
+
 ## Compilation
 
 To compile the source into its executables, do:
