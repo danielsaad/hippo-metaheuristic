@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <numbers>
 
 HippoOptimizer::HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
                                std::unique_ptr<ProblemBase> objective_function)
