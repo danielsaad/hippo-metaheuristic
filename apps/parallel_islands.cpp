@@ -23,7 +23,7 @@ std::map<int, string> function_names = {
 };
 
 void print_usage(char **argv) {
-    std::cout << "Usage: " << argv[0] << "<function_type> <n_agents> <n_generations> <migration_rate>\n";
+    std::cout << "Usage: " << argv[0] << " <function_type> <n_agents> <n_generations> <migration_rate>\n";
     std::cout << "Function types:\n";
     std::cout << "1: Sphere\n";
     std::cout << "2: Rosenbrock\n";

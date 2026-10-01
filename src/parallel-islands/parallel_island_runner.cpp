@@ -1,24 +1,27 @@
 #include "parallel-islands/parallel_island_runner.hpp"
+#include "BS_thread_pool.hpp"
+#include <future>
 #include <iostream>
 #include <iterator>
 #include <print>
-#include <thread>
 #include <vector>
 
 using std::print;
 using std::println;
 
-void ParallelIslandRunner::run() {
-    std::vector<std::thread> threads;
+void
+ParallelIslandRunner::run() {
+    BS::thread_pool pool(n_threads_); // Create a thread pool with n_threads_ threads
+    vector<std::future<void>> future(n_threads_);
     /**
      * Compute generation 0 of all islands
      */
     for (size_t i = 0; i < n_threads_; i++) {
-        threads.emplace_back([this, i] { islands_[i].run(); });
+        future[i] = pool.submit_task([this, i] { islands_[i].run(); });
     }
     for (size_t i = 0; i < n_threads_; i++) {
-        std::cout << "Joining thread " << i << std::endl;
-        threads[i].join();
+        std::cout << "Waiting thread " << i << std::endl;
+        future[i].wait();
     }
     for (size_t i = 0; i < n_threads_; i++) {
         std::cout << "Thread " << i << " best solution: ";
@@ -66,11 +69,11 @@ void ParallelIslandRunner::run() {
         }
 
         for (size_t i = 0; i < n_threads_; i++) {
-            threads[i] = std::thread([this, i] { islands_[i].run(false); });
+            future[i] = pool.submit_task([this, i] { islands_[i].run(false); });
         }
         for (size_t i = 0; i < n_threads_; i++) {
-            println("Joining thread {}", i);
-            threads[i].join();
+            println("Waiting thread {}", i);
+            future[i].wait();
         }
 
         for (size_t i = 0; i < n_threads_; i++) {
