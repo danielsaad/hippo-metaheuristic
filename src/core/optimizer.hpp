@@ -9,11 +9,14 @@
 
 class OptimizerInterface {
   public:
-    virtual void run(bool initialize = true) = 0;
-    virtual void set_population_with_fitness(const std::vector<std::vector<double>> &population,
-                                             const std::vector<double> &fitness) = 0;
+    virtual void
+    run(bool initialize = true) = 0;
+    virtual void
+    set_population_with_fitness(const std::vector<std::vector<double>> &population,
+                                const std::vector<double> &fitness) = 0;
     virtual std::tuple<std::vector<std::vector<double>>, std::vector<double>>
     get_population_and_fitness() const = 0;
+    virtual ~OptimizerInterface() = default;
 };
 
 class OptimizerBase : public OptimizerInterface {
@@ -21,9 +24,21 @@ class OptimizerBase : public OptimizerInterface {
     OptimizerBase(uint32_t n_agents, uint32_t max_iterations, std::unique_ptr<ProblemBase> objective_function)
         : n_agents_(n_agents), max_iterations_(max_iterations),
           objective_function_(std::move(objective_function)), convergence_curve_(max_iterations) {}
+
     virtual ~OptimizerBase() = default;
-    std::tuple<vector<double>, double> get_best_solution() const { return {best_solution_, best_fitness_}; }
-    std::vector<double> get_convergence_curve() const { return convergence_curve_; }
+
+    std::tuple<std::vector<double>, double>
+    get_best_solution() const {
+        return {best_solution_, best_fitness_};
+    }
+
+    virtual std::unique_ptr<OptimizerBase>
+    clone() = 0;
+
+    std::vector<double>
+    get_convergence_curve() const {
+        return convergence_curve_;
+    }
 
   protected:
     uint32_t n_agents_;

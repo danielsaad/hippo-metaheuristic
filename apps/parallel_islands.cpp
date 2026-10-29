@@ -2,10 +2,7 @@
 #include "core/optimizer_factory.hpp"
 #include "parallel-islands/parallel_island_manager.hpp"
 #include "parallel-islands/parallel_island_runner.hpp"
-#include "parallel-islands/replace_worst.hpp"
-#include "parallel-islands/selection_bwr.hpp"
-#include "parallel-islands/topology_complete_graph.hpp"
-#include "parallel-islands/topology_complete_tree.hpp"
+#include "parallel-islands/policies.hpp"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -22,8 +19,10 @@ std::map<int, string> function_names = {
     {13, "Branin"},         {14, "Six-Hump Camel"},
 };
 
-void print_usage(char **argv) {
-    std::cout << "Usage: " << argv[0] << " <function_type> <n_agents> <n_generations> <migration_rate>\n";
+void
+print_usage(char **argv) {
+    std::cout << "Usage: " << argv[0]
+              << " <function_type> <n_agents> <n_generations> <migration_rate> <reconfiguration_rate>\n";
     std::cout << "Function types:\n";
     std::cout << "1: Sphere\n";
     std::cout << "2: Rosenbrock\n";
@@ -41,8 +40,9 @@ void print_usage(char **argv) {
     std::cout << "14: Six-Hump Camel\n";
 }
 
-int main(int argc, char **argv) {
-    if (argc < 5) {
+int
+main(int argc, char **argv) {
+    if (argc < 6) {
         print_usage(argv);
         return 1;
     }
@@ -50,6 +50,7 @@ int main(int argc, char **argv) {
     size_t n_agents = std::atoi(argv[2]);
     size_t n_generations = std::atoi(argv[3]);
     size_t migration_rate = std::atoi(argv[4]);
+    size_t reconfiguration_rate = std::atoi(argv[5]);
     size_t thread_n = std::thread::hardware_concurrency();
     if (function_type < 1 || function_type > 14) {
         std::cout << "Invalid function type. Please choose a number between 1 and 14.\n";
@@ -68,11 +69,14 @@ int main(int argc, char **argv) {
         islands.emplace_back(HomogeneousIsland(std::move(opt)));
     }
 
-    ManagerPolicy manager(std::make_unique<TopologyCompleteTree>(islands), std::make_unique<ReplaceWorst>(),
-                          std::make_unique<SelectionBWR>());
-    ParallelIslandRunner island_runner(thread_n, std::move(islands), n_generations, migration_rate);
+    auto manager = ParallelIslandManager(std::make_unique<TopologyCompleteTree>(islands),
+                                         std::make_unique<SelectionBWR>(), std::make_unique<ReplaceWorst>(),
+                                         std::make_unique<ReconfigurationReconfigureStagnated>(),
+                                         std::make_unique<ReconfigurationChoiceBest>());
+    ParallelIslandRunner island_runner(thread_n, std::move(islands), n_generations, migration_rate,
+                                       reconfiguration_rate);
     ParallelIslandManager island_manager(std::move(manager));
-    island_runner.set_policy(std::move(island_manager));
+    island_runner.set_manager(std::move(island_manager));
     island_runner.run();
     return 0;
 }

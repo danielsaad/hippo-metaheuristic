@@ -4,10 +4,11 @@
 
 class ReconfigurationReconfigureNone : public ReconfigurationPolicyInterface {
   public:
-    ReconfigurationReconfigureNone(std::vector<HomogeneousIsland> &islands)
-        : ReconfigurationPolicyInterface(islands) {};
+    ReconfigurationReconfigureNone() = default;
     virtual ~ReconfigurationReconfigureNone() = default;
 
-    void apply() override;
+  public:
+    bool
+    apply(HomogeneousIsland &island, std::unique_ptr<OptimizerBase> new_optimizer) override;
 };
 #endif

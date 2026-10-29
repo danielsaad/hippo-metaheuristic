@@ -5,13 +5,12 @@
 
 class ReconfigurationPolicyInterface {
   public:
-    ReconfigurationPolicyInterface(std::vector<HomogeneousIsland> &islands) : islands_(islands) {};
+    ReconfigurationPolicyInterface() = default;
     virtual ~ReconfigurationPolicyInterface() = default;
-    virtual void
-    apply() = 0;
+    virtual bool
+    apply(HomogeneousIsland &island, std::unique_ptr<OptimizerBase> new_optimizer) = 0;
 
   protected:
-    std::vector<HomogeneousIsland> &islands_;
 };
 
 #endif

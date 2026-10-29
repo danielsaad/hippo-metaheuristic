@@ -13,6 +13,9 @@ class HomogeneousIsland {
 
   public:
     std::unique_ptr<OptimizerBase> optimizer_;
+    std::vector<double> best_solution_;
+    std::vector<double> convergence_curve_;
+    double best_fitness_;
 };
 
 #endif // HOMOGENEOUS_ISLAND_HPP

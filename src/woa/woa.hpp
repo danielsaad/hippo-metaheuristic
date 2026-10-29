@@ -5,10 +5,11 @@
 #include "core/problem.hpp"
 #include "random/random_gen.hpp"
 #include <iostream>
+#include <numbers>
 #include <print>
 #include <random>
 #include <vector>
-#include <numbers>
+
 class Woa : public OptimizerBase {
   public:
     Woa(uint32_t n_agents, uint32_t max_it, std::unique_ptr<ProblemBase> objective_function)
@@ -25,13 +26,20 @@ class Woa : public OptimizerBase {
         return std::make_tuple(positions_, fitness_values_);
     }
 
-    void set_population_with_fitness(const std::vector<std::vector<double>> &population,
-                                     const std::vector<double> &fitness) override {
+    virtual std::unique_ptr<OptimizerBase>
+    clone() override {
+        return std::make_unique<Woa>(n_agents_, max_iterations_, objective_function_->clone());
+    }
+
+    void
+    set_population_with_fitness(const std::vector<std::vector<double>> &population,
+                                const std::vector<double> &fitness) override {
         positions_ = population;
         fitness_values_ = fitness;
     }
 
-    void run(bool initialize_flag = true) override {
+    void
+    run(bool initialize_flag = true) override {
         std::print("Running WOA with {} agents, max iterations: {}\n", n_agents_, max_iterations_);
         if (initialize_flag) {
             initialize();
@@ -59,7 +67,7 @@ class Woa : public OptimizerBase {
                         if (std::abs(a_coef) >= 1) {
                             uint32_t rnd_leader_idx = n_agents_ * rng_.rnd(dist_real_uniform);
                             const auto &x_rand = positions_[rnd_leader_idx];
-                            double d_x_rand = abs(c_coef * x_rand[j] - positions_[i][j]);
+                            double d_x_rand = std::abs(c_coef * x_rand[j] - positions_[i][j]);
                             positions_[i][j] = x_rand[j] - a_coef * d_x_rand;
 
                         } else {
@@ -91,7 +99,8 @@ class Woa : public OptimizerBase {
     double leader_score_;
     random_gen::Rng rng_;
 
-    void initialize() {
+    void
+    initialize() {
         n_dimensions_ = objective_function_->n_dimensions();
         lower_bound_vector_ = objective_function_->lowerbound();
         upper_bound_vector_ = objective_function_->upperbound();
@@ -105,7 +114,8 @@ class Woa : public OptimizerBase {
         initialize_population();
     }
 
-    void initialize(const std::vector<std::vector<double>> &migrated_solutions) {
+    void
+    initialize(const std::vector<std::vector<double>> &migrated_solutions) {
         for (size_t i = 0; i < std::min(migrated_solutions.size(), positions_.size()); ++i) {
             auto solution = migrated_solutions[i];
             for (size_t j = 0; j < solution.size(); ++j) {
@@ -116,20 +126,23 @@ class Woa : public OptimizerBase {
         }
     }
 
-    void initialize_population() {
+    void
+    initialize_population() {
         auto n_boundary = n_dimensions_ / 2;
         auto dist = std::uniform_real_distribution<double>(lower_bound_, upper_bound_);
         positions_ = rng_.matrix<double>(n_agents_, n_dimensions_, dist);
         fitness_values_ = std::vector<double>(n_agents_);
     }
 
-    void calculate_fitness() {
+    void
+    calculate_fitness() {
         for (size_t i = 0; i < positions_.size(); i++) {
             fitness_values_[i] = objective_function_->evaluate(positions_[i]);
         }
     }
 
-    void update_leader() {
+    void
+    update_leader() {
         calculate_fitness();
         uint32_t leader_idx = 0;
         for (size_t i = 0; i < n_agents_; i++) {

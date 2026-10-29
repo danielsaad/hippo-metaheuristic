@@ -17,11 +17,19 @@ class HippoOptimizer : public OptimizerBase {
     HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
                    std::unique_ptr<ProblemBase> objective_function);
 
-    virtual void run(bool initialize_flag = true) override;
+    virtual void
+    run(bool initialize_flag = true) override;
     virtual std::tuple<std::vector<std::vector<double>>, std::vector<double>>
     get_population_and_fitness() const override;
-    void set_population_with_fitness(const std::vector<std::vector<double>> &population,
-                                     const std::vector<double> &fitness) override;
+    void
+    set_population_with_fitness(const std::vector<std::vector<double>> &population,
+                                const std::vector<double> &fitness) override;
+
+    virtual std::unique_ptr<OptimizerBase>
+    clone() override {
+        return std::make_unique<HippoOptimizer>(n_hippo, max_iterations_,
+                                                std::move(objective_function_->clone()));
+    }
 
   private:
     // initial parameters
@@ -38,11 +46,16 @@ class HippoOptimizer : public OptimizerBase {
     vector<double> upperbound_vector;  // solution's upperbound
     vector<vector<double>> population; // population of hippos
 
-    void initialize();
-    void initialize(const vector<std::vector<double>> &migrated_solutions);
-    void explore(uint32_t best_idx, uint32_t iteration);
-    void defend();
-    void escape(uint32_t iteration);
+    void
+    initialize();
+    void
+    initialize(const vector<std::vector<double>> &migrated_solutions);
+    void
+    explore(uint32_t best_idx, uint32_t iteration);
+    void
+    defend();
+    void
+    escape(uint32_t iteration);
 };
 
 #endif // HIPPO_OPTIMIZER_H

@@ -10,24 +10,23 @@
 class ParallelIslandRunner {
   public:
     ParallelIslandRunner(size_t n_threads, std::vector<HomogeneousIsland> islands, size_t n_generations,
-                         size_t migration_rate)
-        : n_threads_(n_threads), n_generations_(n_generations), migration_rate_(migration_rate),
-          islands_(std::move(islands)) {};
+                         size_t migration_rate, size_t reconfiguration_rate);
 
-    void run();
-    void set_policy(ParallelIslandManager &&manager) { manager_ = std::move(manager); }
+    void
+    run();
+
+    void
+    set_manager(ParallelIslandManager &&manager);
 
   private:
-    tuple<vector<vector<double>>, vector<double>> select_individuals(HomogeneousIsland &island) {
-        auto [p, f] = island.optimizer_->get_population_and_fitness();
-        auto [migrants, fitness] = manager_.select_individuals(p, f);
-        return std::make_tuple(migrants, fitness);
-    }
+    tuple<vector<vector<double>>, vector<double>>
+    select_individuals(HomogeneousIsland &island);
 
   private:
     size_t n_threads_;
     size_t n_generations_;
     size_t migration_rate_;
+    size_t reconfiguration_rate_;
     std::vector<HomogeneousIsland> islands_;
     ParallelIslandManager manager_;
 };

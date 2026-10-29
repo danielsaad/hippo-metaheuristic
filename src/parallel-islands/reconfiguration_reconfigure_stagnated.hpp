@@ -4,11 +4,10 @@
 
 class ReconfigurationReconfigureStagnated : public ReconfigurationPolicyInterface {
   public:
-    ReconfigurationReconfigureStagnated(std::vector<HomogeneousIsland> &islands)
-        : ReconfigurationPolicyInterface(islands) {};
+    ReconfigurationReconfigureStagnated() = default;
     virtual ~ReconfigurationReconfigureStagnated() = default;
 
-    void
-    apply() override;
+    bool
+    apply(HomogeneousIsland &island, std::unique_ptr<OptimizerBase> new_optimizer) override;
 };
 #endif
