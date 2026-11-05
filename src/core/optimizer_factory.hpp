@@ -9,7 +9,8 @@
 enum {
     HO = 1,
     WOA,
-    OPTIMIZER_FACTORY_SIZE = WOA
+    GWO,
+    OPTIMIZER_FACTORY_SIZE = GWO
 };
 
 class OptimizerFactory {

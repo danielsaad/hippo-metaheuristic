@@ -7,23 +7,17 @@
 HippoOptimizer::HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
                                std::unique_ptr<ProblemBase> objective_function)
     : OptimizerBase(n_hippo, max_iterations, std::move(objective_function)), n_hippo(n_hippo) {
-    lowerbound_ = objective_function_->lowerbound()[0]; // Assuming all dimensions have the same bounds
-    upperbound_ = objective_function_->upperbound()[0];
-    std::cout << "Initialized HippoOptimizer with " << n_hippo
-              << " hippos, max iterations: " << max_iterations_ << ", lower bound: " << lowerbound_
-              << ", upper bound: " << upperbound_ << "\n";
-    n_hippo = n_agents_;
-    n_dimensions_ = objective_function_->n_dimensions();
-    fitness_function = [this](const vector<double> &x) { return objective_function_->evaluate(x); };
+    configure();
 }
 
-void HippoOptimizer::run(bool initialize_flag) {
+void
+HippoOptimizer::run(bool initialize_flag) {
     if (initialize_flag) {
         initialize();
     }
-    std::cout << "Running HippoOptimizer...\n"
-              << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_
-              << " dimensions.\n";
+    // std::cout << "Running HippoOptimizer...\n"
+    //           << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_
+    //           << " dimensions.\n";
     vector<double> best_global; // best hippo globally
     double fbest_global;        // best fitness globally
     uint32_t best_idx_global;   // best idx globally
@@ -49,14 +43,33 @@ void HippoOptimizer::run(bool initialize_flag) {
     }
 }
 
-std::tuple<std::vector<vector<double>>, vector<double>> HippoOptimizer::get_population_and_fitness() const {
+std::tuple<std::vector<vector<double>>, vector<double>>
+HippoOptimizer::get_population_and_fitness() const {
     std::tuple<std::tuple<std::vector<double>, double>> population_with_fitness;
     return make_tuple(population, fitness_vector);
 }
-void HippoOptimizer::set_population_with_fitness(const std::vector<std::vector<double>> &population,
-                                                 const std::vector<double> &fitness) {
+
+void
+HippoOptimizer::set_population_with_fitness(const std::vector<std::vector<double>> &population,
+                                            const std::vector<double> &fitness) {
     this->population = population;
     this->fitness_vector = fitness;
+}
+
+std::unique_ptr<OptimizerBase>
+HippoOptimizer::clone() {
+    return std::make_unique<HippoOptimizer>(n_hippo, max_iterations_, objective_function_->clone());
+}
+
+void
+HippoOptimizer::configure() {
+    lowerbound_ = objective_function_->lowerbound()[0]; // Assuming all dimensions have the same bounds
+    upperbound_ = objective_function_->upperbound()[0];
+    n_hippo = n_agents_;
+    n_dimensions_ = objective_function_->n_dimensions();
+    fitness_function = [this](const vector<double> &x) { return objective_function_->evaluate(x); };
+    lowerbound_vector.resize(n_dimensions_, lowerbound_);
+    upperbound_vector.resize(n_dimensions_, upperbound_);
 }
 
 /**
@@ -64,9 +77,8 @@ void HippoOptimizer::set_population_with_fitness(const std::vector<std::vector<d
  * @param  best_idx index of the best hippo
  * @param iteration currenct iteration
  **/
-void HippoOptimizer::initialize() {
-    lowerbound_vector.resize(n_dimensions_, lowerbound_);
-    upperbound_vector.resize(n_dimensions_, upperbound_);
+void
+HippoOptimizer::initialize() {
     population = vector<vector<double>>(n_hippo, vector<double>(n_dimensions_));
     auto uniform_gen = UniformDist<double>(0, 1);
     for (uint32_t j = 0; j < n_dimensions_; j++) {
@@ -88,7 +100,8 @@ void HippoOptimizer::initialize() {
  * @param iteration currenct iteration
  **/
 
-void HippoOptimizer::explore(uint32_t best_idx, uint32_t iteration) {
+void
+HippoOptimizer::explore(uint32_t best_idx, uint32_t iteration) {
     // Phase 1: exploration. Update hippos positions in the river or pond
     auto dominant_hippo = population[best_idx];
     vector<vector<double>> population_p1(n_hippo, vector<double>(n_dimensions_));
@@ -183,7 +196,8 @@ void HippoOptimizer::explore(uint32_t best_idx, uint32_t iteration) {
  * @brief  Phase 2 of the optimization. Defend against predators.
  *
  */
-void HippoOptimizer::defend() {
+void
+HippoOptimizer::defend() {
     for (size_t i = n_hippo / 2; i < n_hippo; i++) {
         vector<double> predator(n_dimensions_);
         double r = UniformDist<double>(0, 1).generate();
@@ -229,7 +243,8 @@ void HippoOptimizer::defend() {
     }
 }
 
-void HippoOptimizer::escape(uint32_t iteration) {
+void
+HippoOptimizer::escape(uint32_t iteration) {
     for (size_t i = 0; i < n_hippo; i++) {
         vector<double> lo_local(n_dimensions_, lowerbound_ / iteration);
         vector<double> hi_local(n_dimensions_, upperbound_ / iteration);

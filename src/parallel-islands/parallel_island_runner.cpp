@@ -26,7 +26,7 @@ ParallelIslandRunner::run() {
         future[i] = pool.submit_task([this, i] { islands_[i].run(); });
     }
     for (size_t i = 0; i < n_threads_; i++) {
-        std::cout << "Waiting thread " << i << std::endl;
+        // std::cout << "Waiting thread " << i << std::endl;
         future[i].wait();
     }
     for (size_t i = 0; i < n_threads_; i++) {
@@ -57,11 +57,12 @@ ParallelIslandRunner::run() {
             auto new_optimizer = manager_.choose_optimizer_for_reconfiguration(islands_);
 
             for (size_t j = 0; j < n_threads_; j++) {
+                int old_type = islands_[j].optimizer_->get_optimizer_id();
                 auto result = manager_.reconfigure_island(islands_[j], new_optimizer->clone());
                 if (result) {
-                    println("Island {} reconfigured with new optimizer", j);
+                    println("Island {} reconfigured from optimizer type {} with new optimizer type {}", j, old_type, new_optimizer->get_optimizer_id());
                 } else {
-                    println("Island {} not reconfigured", j);
+                    println("Island {} not reconfigured: type {}", j,old_type);
                 }
             }
         }
@@ -79,7 +80,7 @@ ParallelIslandRunner::run() {
 
             // Select individuals from each island that will proceed to migration
             for (size_t j = 0; j < n_threads_; j++) {
-                println("Selecting individuals from island {}", j);
+                // println("Selecting individuals from island {}", j);
                 vector<vector<double>> population_pool;
                 vector<double> fitness_pool;
                 for (auto &x : migration_individuals[j]) {
@@ -98,7 +99,7 @@ ParallelIslandRunner::run() {
             future[i] = pool.submit_task([this, i] { islands_[i].run(false); });
         }
         for (size_t i = 0; i < n_threads_; i++) {
-            println("Waiting thread {}", i);
+            // println("Waiting thread {}", i);
             future[i].wait();
         }
 

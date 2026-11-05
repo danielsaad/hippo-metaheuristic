@@ -3,6 +3,8 @@
 #include "parallel-islands/parallel_island_manager.hpp"
 #include "parallel-islands/parallel_island_runner.hpp"
 #include "parallel-islands/policies.hpp"
+#include "parallel-islands/reconfiguration_reconfigure_none.hpp"
+#include "parallel-islands/reconfiguration_reconfigure_stagnated.hpp"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -62,14 +64,14 @@ main(int argc, char **argv) {
     std::vector<HomogeneousIsland> islands;
     islands.reserve(thread_n);
     const int max_it = 60;
-    vector<size_t> island_max_it = {max_it, max_it};
+    vector<size_t> island_max_it = {max_it, max_it, max_it};
     for (size_t i = 0; i < thread_n; i++) {
-        auto opt = OptimizerFactory::create(1 + (i % 2), n_agents, island_max_it[i % 2],
+        auto opt = OptimizerFactory::create(1 + (i % 3), n_agents, island_max_it[i % 3],
                                             BenchmarkFunctionFactory::create(function_type));
         islands.emplace_back(HomogeneousIsland(std::move(opt)));
     }
 
-    auto manager = ParallelIslandManager(std::make_unique<TopologyCompleteTree>(islands),
+    auto manager = ParallelIslandManager(std::make_unique<TopologyCompleteGraph>(islands),
                                          std::make_unique<SelectionBWR>(), std::make_unique<ReplaceWorst>(),
                                          std::make_unique<ReconfigurationReconfigureStagnated>(),
                                          std::make_unique<ReconfigurationChoiceBest>());

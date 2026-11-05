@@ -7,6 +7,7 @@
 std::map<int, string> optimizer_names = {
     {1, "HO"},
     {2, "WOA"},
+    {3, "GWO"},
 };
 
 std::map<int, string> function_names = {
@@ -24,6 +25,7 @@ void print_usage(char** argv){
         std::cout << "Optimizer types:\n";
         std::cout << "1: HO\n";
         std::cout << "2: WOA\n";
+        std::cout << "3: GWO\n";
         std::cout << "Function types:\n";
         std::cout << "1: Sphere\n";
         std::cout << "2: Rosenbrock\n";
@@ -57,8 +59,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (optimizer_type < 1 || optimizer_type > 2) {
-        std::cout << "Invalid optimizer type. Please choose a number between 1 and 2.\n";
+    if (optimizer_type < 1 || optimizer_type > 3) {
+        std::cout << "Invalid optimizer type. Please choose a number between 1 and 3.\n";
         print_usage(argv);
         return 1;
     }

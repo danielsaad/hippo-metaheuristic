@@ -3,6 +3,7 @@
 #define HIPPO_OPTIMIZER_H
 
 #include "core/optimizer.hpp"
+#include "core/optimizer_factory.hpp"
 #include "ho/function.hpp"
 #include "ho/hippo_math.hpp"
 #include "ho/hippo_random.hpp"
@@ -25,11 +26,13 @@ class HippoOptimizer : public OptimizerBase {
     set_population_with_fitness(const std::vector<std::vector<double>> &population,
                                 const std::vector<double> &fitness) override;
 
+    virtual int
+    get_optimizer_id() const override {
+        return HO;
+    };
+
     virtual std::unique_ptr<OptimizerBase>
-    clone() override {
-        return std::make_unique<HippoOptimizer>(n_hippo, max_iterations_,
-                                                std::move(objective_function_->clone()));
-    }
+    clone() override;
 
   private:
     // initial parameters
@@ -46,6 +49,8 @@ class HippoOptimizer : public OptimizerBase {
     vector<double> upperbound_vector;  // solution's upperbound
     vector<vector<double>> population; // population of hippos
 
+    void
+    configure();
     void
     initialize();
     void

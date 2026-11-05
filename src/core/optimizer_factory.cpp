@@ -1,5 +1,6 @@
 #include "core/optimizer_factory.hpp"
 
+#include "gwo/gwo.hpp"
 #include "ho/hippo_optimizer.hpp"
 #include "woa/woa.hpp"
 
@@ -11,6 +12,8 @@ OptimizerFactory::create(int type, size_t n_agents, size_t max_iterations,
         return std::make_unique<HippoOptimizer>(n_agents, max_iterations, objective_function->clone());
     case WOA:
         return std::make_unique<Woa>(n_agents, max_iterations, objective_function->clone());
+    case GWO:
+        return std::make_unique<Gwo>(n_agents, max_iterations, objective_function->clone());
     default:
         return nullptr;
     }

@@ -27,6 +27,9 @@ class OptimizerBase : public OptimizerInterface {
 
     virtual ~OptimizerBase() = default;
 
+    virtual int
+    get_optimizer_id() const = 0;
+
     std::tuple<std::vector<double>, double>
     get_best_solution() const {
         return {best_solution_, best_fitness_};

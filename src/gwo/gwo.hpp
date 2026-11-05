@@ -1,0 +1,127 @@
+#ifndef GWO_HPP
+#define GWO_HPP
+#include "core/optimizer.hpp"
+#include "core/optimizer_factory.hpp"
+#include "ho/hippo_random.hpp"
+
+class Gwo : public OptimizerBase {
+  private:
+    std::vector<std::vector<double>> population_;
+    std::vector<double> alpha_pos_, beta_pos_, delta_pos_;
+    double alpha_score_, beta_score_, delta_score_;
+    uint32_t n_dimension;
+    double lowerbound_, upperbound_;
+    std::vector<double> lowerbound_vector, upperbound_vector;
+    std::vector<double> fitness_vector_;
+
+  public:
+    Gwo(uint32_t n_agents, uint32_t max_iterations, std::unique_ptr<ProblemBase> objective_function)
+        : OptimizerBase(n_agents, max_iterations, std::move(objective_function)) {
+        n_dimension = objective_function_->n_dimensions();
+        lowerbound_ = objective_function_->lowerbound()[0];
+        upperbound_ = objective_function_->upperbound()[0];
+        lowerbound_vector = objective_function_->lowerbound();
+        upperbound_vector = objective_function_->upperbound();
+    }
+
+    ~Gwo() = default;
+
+    virtual int
+    get_optimizer_id() const override {
+        return GWO;
+    }
+
+    virtual void
+    set_population_with_fitness(const std::vector<std::vector<double>> &population,
+                                const std::vector<double> &fitness) override {
+        population_ = population;
+        fitness_vector_ = fitness;
+    }
+
+    virtual std::tuple<std::vector<std::vector<double>>, std::vector<double>>
+    get_population_and_fitness() const override {
+        return std::make_tuple(population_, fitness_vector_);
+    }
+
+    virtual std::unique_ptr<OptimizerBase>
+    clone() override {
+        return std::make_unique<Gwo>(n_agents_, max_iterations_, objective_function_->clone());
+    }
+
+    virtual void
+    run(bool initialize_flag = true) override {
+        if (initialize_flag) {
+            initialize_population();
+        }
+        // Put wolves back in the search space if they go out of bounds
+        for (uint32_t it = 0; it < max_iterations_; it++) {
+            for (auto &agent : population_) {
+                for (size_t j = 0; j < n_dimension; j++) {
+                    agent[j] = std::clamp(agent[j], lowerbound_vector[j], upperbound_vector[j]);
+                }
+            }
+            // Compute fitness for each agent and update alpha, beta, and delta positions and scores
+            for (uint32_t i = 0; i < n_agents_; i++) {
+                fitness_vector_[i] = objective_function_->evaluate(population_[i]);
+                if (fitness_vector_[i] < alpha_score_) {
+                    alpha_score_ = fitness_vector_[i];
+                    alpha_pos_ = population_[i];
+                } else if (fitness_vector_[i] < beta_score_) {
+                    beta_score_ = fitness_vector_[i];
+                    beta_pos_ = population_[i];
+                } else if (fitness_vector_[i] < delta_score_) {
+                    delta_score_ = fitness_vector_[i];
+                    delta_pos_ = population_[i];
+                }
+            }
+            // a decreases linearly from 2 to 0
+            double a = 2.0 - it * (2.0 / max_iterations_);
+            for (uint32_t i = 0; i < n_agents_; i++) {
+                for (size_t j = 0; j < n_dimension; j++) {
+                    double r1 = UniformDist<double>(0, 1).generate();
+                    double r2 = UniformDist<double>(0, 1).generate();
+                    double A1 = 2 * a * r1 - a;
+                    double C1 = 2 * r2;
+                    double D_alpha = std::abs(C1 * alpha_pos_[j] - population_[i][j]);
+                    double X1 = alpha_pos_[j] - A1 * D_alpha;
+
+                    r1 = UniformDist<double>(0, 1).generate();
+                    r2 = UniformDist<double>(0, 1).generate();
+                    double A2 = 2 * a * r1 - a;
+                    double C2 = 2 * r2;
+                    double D_beta = std::abs(C2 * beta_pos_[j] - population_[i][j]);
+                    double X2 = beta_pos_[j] - A2 * D_beta;
+
+                    r1 = UniformDist<double>(0, 1).generate();
+                    r2 = UniformDist<double>(0, 1).generate();
+                    double A3 = 2 * a * r1 - a;
+                    double C3 = 2 * r2;
+                    double D_delta = std::abs(C3 * delta_pos_[j] - population_[i][j]);
+                    double X3 = delta_pos_[j] - A3 * D_delta;
+
+                    population_[i][j] = (X1 + X2 + X3) / 3.0;
+                }
+            }
+        }
+        best_solution_ = alpha_pos_;
+        best_fitness_ = alpha_score_;
+        convergence_curve_.push_back(alpha_score_);
+    }
+
+  private:
+    void
+    initialize_population() {
+        fitness_vector_.assign(n_agents_, std::numeric_limits<double>::max());
+        alpha_score_ = beta_score_ = delta_score_ = std::numeric_limits<double>::max();
+        alpha_pos_ = beta_pos_ = delta_pos_ = vector<double>(n_dimension, 0.0);
+        population_.assign(n_agents_, vector<double>(n_dimension, 0.0));
+        for (uint32_t i = 0; i < n_agents_; i++) {
+            for (uint32_t j = 0; j < n_dimension; j++) {
+                population_[i][j] = lowerbound_vector[j] + UniformDist<double>(0, 1).generate() *
+                                                               (upperbound_vector[j] - lowerbound_vector[j]);
+            }
+        }
+    }
+};
+
+#endif
