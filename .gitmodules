@@ -7,3 +7,6 @@
 [submodule "thread-pool"]
 	path = third_party/thread-pool
 	url = git@github.com:bshoshany/thread-pool.git
+[submodule "third_party/rapidcsv"]
+	path = third_party/rapidcsv
+	url = https://github.com/d99kris/rapidcsv.git
