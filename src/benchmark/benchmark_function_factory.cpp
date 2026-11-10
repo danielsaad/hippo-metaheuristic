@@ -2,7 +2,8 @@
 #include "benchmark/benchmark_functions.hpp"
 #include <memory>
 
-std::unique_ptr<BenchmarkFunctionBase> BenchmarkFunctionFactory::create(int type) {
+std::unique_ptr<BenchmarkFunctionBase>
+BenchmarkFunctionFactory::create(int type) {
     switch (type) {
     case SPHERE:
         return std::make_unique<SphereFunction>();
@@ -32,6 +33,76 @@ std::unique_ptr<BenchmarkFunctionBase> BenchmarkFunctionFactory::create(int type
         return std::make_unique<BraninFunction>();
     case SIX_HUMP_CAMEL:
         return std::make_unique<SixHumpCamelFunction>();
+    case BUKIN_N6:
+        return std::make_unique<BukinN6Function>();
+    case CROSS_IN_TRAY:
+        return std::make_unique<CrossInTrayFunction>();
+    case DROP_WAVE:
+        return std::make_unique<DropWaveFunction>();
+    case EGGHOLDER:
+        return std::make_unique<EggholderFunction>();
+    case GRAMACY_LEE:
+        return std::make_unique<GramacyLeeFunction>();
+    case HOLDER_TABLE:
+        return std::make_unique<HolderTableFunction>();
+    case LANGERMANN:
+        return std::make_unique<LangermannFunction>();
+    case LEVY:
+        return std::make_unique<LevyFunction>();
+    case LEVY_N13:
+        return std::make_unique<LevyN13Function>();
+    case SCHAEFFER_N2:
+        return std::make_unique<SchaefferN2Function>();
+    case SCHAEFFER_N4:
+        return std::make_unique<SchaefferN4Function>();
+    case SHUBERT:
+        return std::make_unique<ShubertFunction>();
+    case BOHACHEVSKY:
+        return std::make_unique<BohachevskyFunction>();
+    case PERM_0DB:
+        return std::make_unique<Perm0DBetaFunction>();
+    case SUM_DIFFERENT_POWERS:
+        return std::make_unique<SumDifferentPowersFunction>();
+    case SUM_SQUARES:
+        return std::make_unique<SumSquaresFunction>();
+    case TRID:
+        return std::make_unique<TridFunction>();
+    case BOOTH:
+        return std::make_unique<BoothFunction>();
+    case MATYAS:
+        return std::make_unique<MatyasFunction>();
+    case MCCORMICK:
+        return std::make_unique<McCormickFunction>();
+    case POWER_SUM:
+        return std::make_unique<PowerSumFunction>();
+    case ZAKHAROV:
+        return std::make_unique<ZakharovFunction>();
+    case THREE_HUMP_CAMEL:
+        return std::make_unique<ThreeHumpCamelFunction>();
+    case DIXON_PRICE:
+        return std::make_unique<DixonPriceFunction>();
+    case DE_JONG_N5:
+        return std::make_unique<DeJongN5Function>();
+    case BEALE:
+        return std::make_unique<BealeFunction>();
+    case COLVILLE:
+        return std::make_unique<ColvilleFunction>();
+    case FORRESTER_2008:
+        return std::make_unique<ForresterFunction>();
+    case HARTMANN_3D:
+        return std::make_unique<Hartmann3DFunction>();
+    case HARTMANN_4D:
+        return std::make_unique<Hartmann4DFunction>();
+    case HARTMANN_6D:
+        return std::make_unique<Hartmann6DFunction>();
+    case PERM_DB:
+        return std::make_unique<PermDBetaFunction>();
+    case SHEKEL:
+        return std::make_unique<ShekelFunction>();
+    case POWELL:
+        return std::make_unique<PowellFunction>();
+    case STYBLINSKI_TANG:
+        return std::make_unique<StyblinskiTangFunction>();
     default:
         return nullptr;
     }

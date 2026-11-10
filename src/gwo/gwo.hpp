@@ -3,6 +3,9 @@
 #include "core/optimizer.hpp"
 #include "core/optimizer_factory.hpp"
 #include "ho/hippo_random.hpp"
+#include <algorithm>
+#include <limits>
+#include <numeric>
 #include <stdexcept>
 
 class Gwo : public OptimizerBase {
@@ -48,8 +51,27 @@ class Gwo : public OptimizerBase {
         n_agents_ = static_cast<uint32_t>(population.size());
         population_ = population;
         fitness_vector_ = fitness;
+        std::vector<size_t> order(population.size());
+        std::iota(order.begin(), order.end(), 0);
+        std::ranges::sort(order, {}, [&](size_t i) { return fitness[i]; });
         alpha_score_ = beta_score_ = delta_score_ = std::numeric_limits<double>::max();
         alpha_pos_ = beta_pos_ = delta_pos_ = vector<double>(n_dimension, 0.0);
+        if (!order.empty()) {
+            alpha_score_ = fitness[order[0]];
+            alpha_pos_ = population[order[0]];
+            update_best_solution(alpha_pos_, alpha_score_);
+        }
+        if (order.size() > 1) {
+            beta_score_ = fitness[order[1]];
+            beta_pos_ = population[order[1]];
+        }
+        if (order.size() > 2) {
+            delta_score_ = fitness[order[2]];
+            delta_pos_ = population[order[2]];
+        } else {
+            delta_score_ = beta_score_;
+            delta_pos_ = beta_pos_;
+        }
     }
 
     virtual std::tuple<std::vector<std::vector<double>>, std::vector<double>>
@@ -66,7 +88,7 @@ class Gwo : public OptimizerBase {
     run(bool initialize_flag = true) override {
         if (initialize_flag) {
             initialize_population();
-        } else if (population_.size() != n_agents_ || fitness_vector_.size() != n_agents_) {
+        } else if (population_.size() != n_agents_ or fitness_vector_.size() != n_agents_) {
             throw std::logic_error("GWO must receive a complete population before run(false)");
         }
         // Put wolves back in the search space if they go out of bounds
@@ -119,8 +141,7 @@ class Gwo : public OptimizerBase {
                 }
             }
         }
-        best_solution_ = alpha_pos_;
-        best_fitness_ = alpha_score_;
+        update_best_solution(alpha_pos_, alpha_score_);
         convergence_curve_.push_back(alpha_score_);
     }
 

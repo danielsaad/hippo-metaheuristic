@@ -18,6 +18,9 @@ class ParallelIslandRunner {
     void
     set_manager(ParallelIslandManager &&manager);
 
+    void
+    save_data();
+
   private:
     tuple<vector<vector<double>>, vector<double>>
     select_individuals(HomogeneousIsland &island);

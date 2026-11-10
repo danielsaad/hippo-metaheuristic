@@ -1,4 +1,6 @@
 #include "woa.hpp"
+#include <algorithm>
+#include <stdexcept>
 
 void
 Woa::initialize_population() {
@@ -24,8 +26,7 @@ Woa::update_leader() {
             leader_pos_ = positions_[i];
         }
     }
-    best_solution_ = leader_pos_;
-    best_fitness_ = leader_score_;
+    update_best_solution(leader_pos_, leader_score_);
 }
 
 std::tuple<std::vector<std::vector<double>>, std::vector<double>>
@@ -41,8 +42,23 @@ Woa::clone() {
 void
 Woa::set_population_with_fitness(const std::vector<std::vector<double>> &population,
                                  const std::vector<double> &fitness) {
+    if (population.size() != fitness.size() || population.size() != n_agents_) {
+        throw std::invalid_argument("WOA population and fitness sizes must match the configured population");
+    }
+    for (const auto &agent : population) {
+        if (agent.size() != n_dimensions_) {
+            throw std::invalid_argument("WOA population agents must match the problem dimension");
+        }
+    }
     positions_ = population;
     fitness_values_ = fitness;
+    auto best = std::min_element(fitness.begin(), fitness.end());
+    if (best != fitness.end() && *best < leader_score_) {
+        auto index = std::distance(fitness.begin(), best);
+        leader_score_ = *best;
+        leader_pos_ = population[index];
+    }
+    update_best_solution(leader_pos_, leader_score_);
 }
 
 void

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <iostream>
 #include <numbers>
+#include <stdexcept>
 
 HippoOptimizer::HippoOptimizer(uint32_t n_hippo, uint32_t max_iterations,
                                std::unique_ptr<ProblemBase> objective_function)
@@ -18,28 +19,28 @@ HippoOptimizer::run(bool initialize_flag) {
     // std::cout << "Running HippoOptimizer...\n"
     //           << max_iterations_ << " iterations, " << n_hippo << " hippos, " << n_dimensions_
     //           << " dimensions.\n";
-    vector<double> best_global; // best hippo globally
-    double fbest_global;        // best fitness globally
-    uint32_t best_idx_global;   // best idx globally
+    vector<double> best_global = best_solution_;
+    double fbest_global = best_fitness_;
     // main loop
     for (uint32_t t = 0; t < max_iterations_; t++) {
-        vector<double> best;
         double fbest;
         uint32_t best_idx;
         // get best solution
         auto it = std::min_element(fitness_vector.begin(), fitness_vector.end());
         fbest = *it;
         best_idx = std::distance(fitness_vector.begin(), it);
-        if (t == 0 or fbest < fbest_global) {
+        if (fbest < fbest_global) {
             fbest_global = fbest;
-            best_idx_global = best_idx;
-            best_global = population[best_idx_global];
+            best_global = population[best_idx];
         }
         explore(best_idx, t);
         defend();
         escape(t);
-        best_fitness_ = fbest_global;
-        best_solution_ = best_global;
+        update_best_solution(best_global, fbest_global);
+    }
+    auto best = std::min_element(fitness_vector.begin(), fitness_vector.end());
+    if (best != fitness_vector.end()) {
+        update_best_solution(population[std::distance(fitness_vector.begin(), best)], *best);
     }
 }
 
@@ -52,8 +53,20 @@ HippoOptimizer::get_population_and_fitness() const {
 void
 HippoOptimizer::set_population_with_fitness(const std::vector<std::vector<double>> &population,
                                             const std::vector<double> &fitness) {
+    if (population.size() != fitness.size() || population.size() != n_hippo) {
+        throw std::invalid_argument("HO population and fitness sizes must match the configured population");
+    }
+    for (const auto &agent : population) {
+        if (agent.size() != n_dimensions_) {
+            throw std::invalid_argument("HO population agents must match the problem dimension");
+        }
+    }
     this->population = population;
     this->fitness_vector = fitness;
+    auto best = std::min_element(fitness.begin(), fitness.end());
+    if (best != fitness.end()) {
+        update_best_solution(population[std::distance(fitness.begin(), best)], *best);
+    }
 }
 
 std::unique_ptr<OptimizerBase>

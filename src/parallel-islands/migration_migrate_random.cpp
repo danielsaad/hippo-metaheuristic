@@ -12,11 +12,11 @@ MigrateRandom::apply() {
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(indices.begin(), indices.end(), g);
-    for (size_t i = 0; i < n_migrants_ && i < indices.size(); ++i) {
+    for (size_t i = 0; i < n_migrants_ and i < indices.size(); ++i) {
         size_t idx = indices[i];
         migrants.push_back(population_[idx]);
     }
-    for (size_t i = 0; i < n_migrants_ && i < indices.size(); ++i) {
+    for (size_t i = 0; i < n_migrants_ and i < indices.size(); ++i) {
         size_t idx = indices[i];
         migrants_fitness.push_back(fitness_[idx]);
     }

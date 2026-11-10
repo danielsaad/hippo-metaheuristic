@@ -4,6 +4,7 @@
 #include "benchmark/benchmark_functions.hpp"
 #include "core/problem.hpp"
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -23,7 +24,8 @@ class OptimizerBase : public OptimizerInterface {
   public:
     OptimizerBase(uint32_t n_agents, uint32_t max_iterations, std::unique_ptr<ProblemBase> objective_function)
         : n_agents_(n_agents), max_iterations_(max_iterations),
-          objective_function_(std::move(objective_function)), convergence_curve_(max_iterations) {}
+          objective_function_(std::move(objective_function)), convergence_curve_(max_iterations),
+          best_fitness_(std::numeric_limits<double>::infinity()) {}
 
     virtual ~OptimizerBase() = default;
 
@@ -33,6 +35,14 @@ class OptimizerBase : public OptimizerInterface {
     std::tuple<std::vector<double>, double>
     get_best_solution() const {
         return {best_solution_, best_fitness_};
+    }
+
+    void
+    update_best_solution(const std::vector<double> &solution, double fitness) {
+        if (fitness < best_fitness_) {
+            best_solution_ = solution;
+            best_fitness_ = fitness;
+        }
     }
 
     virtual std::unique_ptr<OptimizerBase>

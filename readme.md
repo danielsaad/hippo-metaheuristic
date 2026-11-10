@@ -97,6 +97,41 @@ dimension and search bounds in the implementation; the `--gwo-agents`, `--ho-age
 | 12 | Griewank | 30; each coordinate in `[-600, 600]` | Combines a sum of squares with a product of cosine terms, producing many regularly spaced local minima. Minimum: origin, value 0. |
 | 13 | Branin | 2; `x` in `[-5, 10]`, `y` in `[0, 15]` | A two-variable multimodal function with three global minima, each approximately `0.398`. |
 | 14 | Six-Hump Camel | 2; `x` in `[-3, 3]`, `y` in `[-2, 2]` | A two-variable multimodal function with two global minima, each approximately `-1.032`. |
+| 15 | Bukin N. 6 | 2; `x` in `[-15, -5]`, `y` in `[-3, 3]` | Narrow curved valley; minimum 0 at `(-10, 1)`. |
+| 16 | Cross-in-Tray | 2; each coordinate in `[-10, 10]` | Multimodal function with four global minima, approximately `-2.0626`. |
+| 17 | Drop-Wave | 2; each coordinate in `[-5.12, 5.12]` | Oscillatory function with minimum `-1` at the origin. |
+| 18 | Eggholder | 2; each coordinate in `[-512, 512]` | Highly multimodal function with a global minimum near `-959.6407`. |
+| 19 | Gramacy & Lee (2012) | 1; `x` in `[0.5, 2.5]` | One-dimensional multimodal test function. |
+| 20 | Holder Table | 2; each coordinate in `[-10, 10]` | Four global minima, approximately `-19.2085`. |
+| 21 | Langermann | 2; each coordinate in `[0, 10]` | Multimodal function with five weighted centers. |
+| 22 | Levy | 30; each coordinate in `[-10, 10]` | Multimodal function with global minimum 0 at the all-ones vector. |
+| 23 | Levy N. 13 | 2; each coordinate in `[-10, 10]` | Multimodal function with global minimum 0 at `(1, 1)`. |
+| 24 | Schaeffer N. 2 | 2; each coordinate in `[-100, 100]` | Multimodal radial function with minimum 0. |
+| 25 | Schaeffer N. 4 | 2; each coordinate in `[-100, 100]` | Multimodal radial function with minimum 0. |
+| 26 | Shubert | 2; each coordinate in `[-10, 10]` | Highly multimodal product function. |
+| 27 | Bohachevsky | 2; each coordinate in `[-100, 100]` | Smooth multimodal surface with minimum 0 at the origin. |
+| 28 | Perm 0,d,beta | 4; each coordinate in `[-4, 4]` | Permutation-invariant polynomial benchmark, using `beta = 10`. |
+| 29 | Sum of Different Powers | 30; each coordinate in `[-1, 1]` | Sum of increasing absolute powers; minimum 0 at the origin. |
+| 30 | Sum Squares | 30; each coordinate in `[-10, 10]` | Weighted sum of squares; minimum 0 at the origin. |
+| 31 | Trid | 6; each coordinate in `[-36, 36]` | Nonseparable polynomial function with dimension-dependent minimum. |
+| 32 | Booth | 2; each coordinate in `[-10, 10]` | Quadratic function with minimum 0 at `(1, 3)`. |
+| 33 | Matyas | 2; each coordinate in `[-10, 10]` | Quadratic function with minimum 0 at the origin. |
+| 34 | McCormick | 2; `x` in `[-1.5, 4]`, `y` in `[-3, 4]` | Multimodal function with minimum near `-1.9133`. |
+| 35 | Power Sum | 4; each coordinate in `[0, 4]` | Polynomial moment matching function with constants `(8, 18, 44, 114)`. |
+| 36 | Zakharov | 30; each coordinate in `[-5, 10]` | Unimodal nonseparable function with minimum 0 at the origin. |
+| 37 | Three-Hump Camel | 2; each coordinate in `[-5, 5]` | Polynomial function with minimum 0 at the origin. |
+| 38 | Dixon-Price | 30; each coordinate in `[-10, 10]` | Nonseparable function with a dimension-dependent global minimizer. |
+| 39 | De Jong N. 5 | 2; each coordinate in `[-65.536, 65.536]` | Multimodal Foxholes function. |
+| 40 | Beale | 2; each coordinate in `[-4.5, 4.5]` | Function with minimum 0 at `(3, 0.5)`. |
+| 41 | Colville | 4; each coordinate in `[-10, 10]` | Four-dimensional nonseparable function with minimum 0 at `(1, 1, 1, 1)`. |
+| 42 | Forrester et al. (2008) | 1; `x` in `[0, 1]` | One-dimensional surrogate modeling test function. |
+| 43 | Hartmann 3-D | 3; each coordinate in `[0, 1]` | Multimodal function with standard Hartmann coefficients. |
+| 44 | Hartmann 4-D | 4; each coordinate in `[0, 1]` | Multimodal function with standard Hartmann coefficients. |
+| 45 | Hartmann 6-D | 6; each coordinate in `[0, 1]` | Multimodal function with standard Hartmann coefficients. |
+| 46 | Perm d,beta | 4; each coordinate in `[-4, 4]` | Permutation-invariant polynomial benchmark, using `beta = 10`. |
+| 47 | Shekel | 4; each coordinate in `[0, 10]` | Multimodal function with ten weighted centers. |
+| 48 | Powell | 4; each coordinate in `[-4, 5]` | Nonseparable quartic function with minimum 0 at the origin. |
+| 49 | Styblinski-Tang | 30; each coordinate in `[-5, 5]` | Separable multimodal function with a negative global minimum. |
 
 ### Single-optimizer benchmark
 

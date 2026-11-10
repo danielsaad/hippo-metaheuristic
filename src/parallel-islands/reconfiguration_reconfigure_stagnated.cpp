@@ -23,8 +23,11 @@ ReconfigurationReconfigureStagnated::apply(HomogeneousIsland &island,
         island.convergence_curve_[n - n_last_generations] - island.convergence_curve_[n - 1] < EPS;
     if (is_stagnated) {
         auto [population, fitness] = island.optimizer_->get_population_and_fitness();
+        auto [best_solution, best_fitness] = island.optimizer_->get_best_solution();
         island.set_optimizer(std::move(new_optimizer));
         island.optimizer_->set_population_with_fitness(population, fitness);
+        island.optimizer_->update_best_solution(island.best_solution_, island.best_fitness_);
+        island.optimizer_->update_best_solution(best_solution, best_fitness);
     }
     return is_stagnated;
 }

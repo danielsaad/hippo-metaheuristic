@@ -1,10 +1,10 @@
 #include "benchmark/benchmark_function_factory.hpp"
 #include "core/optimizer_factory.hpp"
-#include "parallel-islands/policies.hpp"
 #include "parallel-islands/parallel_island_manager.hpp"
 #include "parallel-islands/parallel_island_runner.hpp"
-#include <argparse/argparse.hpp>
+#include "parallel-islands/policies.hpp"
 #include <algorithm>
+#include <argparse/argparse.hpp>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -14,7 +14,8 @@
 int
 main(int argc, char **argv) {
     argparse::ArgumentParser parser("parallel_islands");
-    parser.add_description("Run a population of optimizer islands with configurable migration and reconfiguration.");
+    parser.add_description(
+        "Run a population of optimizer islands with configurable migration and reconfiguration.");
     parser.add_epilog(
         "Policy values:\n"
         "  --topology: graph (all islands connected) or tree (binary tree)\n"
@@ -34,12 +35,47 @@ main(int argc, char **argv) {
         "  4 Goldstein-Price       11 Ackley\n"
         "  5 Schwefel              12 Griewank\n"
         "  6 Schwefel 2.22         13 Branin\n"
-        "  7 Eason                 14 Six-Hump Camel\n\n"
+        "  7 Eason                 14 Six-Hump Camel\n"
+        " 15 Bukin N. 6\n"
+        " 16 Cross-in-Tray\n"
+        " 17 Drop-Wave\n"
+        " 18 Eggholder\n"
+        " 19 Gramacy & Lee (2012)\n"
+        " 20 Holder Table\n"
+        " 21 Langermann\n"
+        " 22 Levy\n"
+        " 23 Levy N. 13\n"
+        " 24 Schaeffer N. 2\n"
+        " 25 Schaeffer N. 4\n"
+        " 26 Shubert\n"
+        " 27 Bohachevsky\n"
+        " 28 Perm Function 0,d,beta\n"
+        " 29 Sum of Different Powers\n"
+        " 30 Sum Squares\n"
+        " 31 Trid\n"
+        " 32 Booth\n"
+        " 33 Matyas\n"
+        " 34 McCormick\n"
+        " 35 Power Sum\n"
+        " 36 Zakharov\n"
+        " 37 Three-Hump Camel\n"
+        " 38 Dixon-Price\n"
+        " 39 De Jong N. 5\n"
+        " 40 Beale\n"
+        " 41 Colville\n"
+        " 42 Forrester et al. (2008)\n"
+        " 43 Hartmann 3-D\n"
+        " 44 Hartmann 4-D\n"
+        " 45 Hartmann 6-D\n"
+        " 46 Perm Function d,beta\n"
+        " 47 Shekel\n"
+        " 48 Powell\n"
+        " 49 Styblinski-Tang\n\n"
         "Example: parallel_islands --function 3 --gwo 2 --gwo-agents 40 --ho 1 --ho-agents 30 "
         "--woa 1 --woa-agents 20 "
         "--gwo-iterations 100 --ho-iterations 80 --woa-iterations 120");
     parser.add_argument("--function", "-f")
-        .help("benchmark function number (1-14)")
+        .help("benchmark function number (1-49)")
         .default_value(1)
         .scan<'i', int>();
     parser.add_argument("--gwo-agents")
@@ -132,15 +168,16 @@ main(int argc, char **argv) {
     const auto reconfiguration = parser.get<std::string>("--reconfiguration");
     const auto reconfiguration_choice = parser.get<std::string>("--reconfiguration-choice");
 
-    if (function_type < 1 || function_type > 14 || (n_gwo > 0 && gwo_agents == 0) ||
-        (n_ho > 0 && ho_agents == 0) || (n_woa > 0 && woa_agents == 0) || n_generations == 0 ||
-        n_gwo + n_ho + n_woa == 0 || gwo_iterations == 0 || ho_iterations == 0 || woa_iterations == 0) {
-        std::cerr << "Function must be 1-14; agent counts, generations, and optimizer iterations must be positive; "
-                     "and at least one optimizer is required.\n";
+    if (function_type < 1 or function_type > 49 or (n_gwo > 0 and gwo_agents == 0) or
+        (n_ho > 0 and ho_agents == 0) or (n_woa > 0 and woa_agents == 0) or n_generations == 0 or
+        n_gwo + n_ho + n_woa == 0 or gwo_iterations == 0 or ho_iterations == 0 or woa_iterations == 0) {
+        std::cerr
+            << "Function must be 1-49; agent counts, generations, and optimizer iterations must be positive; "
+               "and at least one optimizer is required.\n";
         return 1;
     }
-    if ((topology != "graph" && topology != "tree") || selection != "bwr" || replacement != "worst" ||
-        (reconfiguration != "none" && reconfiguration != "stagnated") || reconfiguration_choice != "best") {
+    if ((topology != "graph" and topology != "tree") or selection != "bwr" or replacement != "worst" or
+        (reconfiguration != "none" and reconfiguration != "stagnated") or reconfiguration_choice != "best") {
         std::cerr << "Unsupported policy value. See --help for available policies.\n";
         return 1;
     }
@@ -181,5 +218,6 @@ main(int argc, char **argv) {
                                 reconfiguration_rate);
     runner.set_manager(std::move(manager));
     runner.run();
+    runner.save_data();
     return 0;
 }

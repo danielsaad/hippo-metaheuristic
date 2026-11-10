@@ -1,3 +1,23 @@
-Checks: '-*,readability-operators-representation'
+# Ativa regras importantes de modernização, performance, legibilidade e previne bugs
+Checks: >
+  -*,
+  bugprone-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -readability-braces-around-statements,
+  -modernize-use-trailing-return-type
+
+# Customizações específicas para as regras ativadas acima
 CheckOptions:
-  readability-operators-representation.BinaryOperators: 'and;or;not'
+  # Garante que operadores usem a representação textual (and, or, not)
+  - key: readability-operators-representation.BinaryOperators
+    value: "and;or;not"
+
+  # Força o limite máximo de complexidade cognitiva de uma função
+  - key: readability-function-cognitive-complexity.Threshold
+    value: "15"
+
+  # Sugere passar parâmetros por rvalue-reference se forem movidos
+  - key: performance-move-const-arg.CheckTriviallyCopyable
+    value: "true"
