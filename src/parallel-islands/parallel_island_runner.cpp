@@ -6,7 +6,6 @@
 #include <print>
 #include <vector>
 
-using std::print;
 using std::println;
 
 ParallelIslandRunner::ParallelIslandRunner(size_t n_threads, std::vector<HomogeneousIsland> islands,

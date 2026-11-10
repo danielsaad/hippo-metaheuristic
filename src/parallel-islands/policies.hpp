@@ -8,6 +8,7 @@
 // Reconfiguration of the islands
 #include "reconfiguration_policy_interface.hpp"
 #include "reconfiguration_reconfigure_stagnated.hpp"
+#include "reconfiguration_reconfigure_none.hpp"
 
 // Replacement of individuals in the island
 #include "replace_policy_interface.hpp"
