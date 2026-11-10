@@ -39,7 +39,7 @@ optimization, it may take a while. Use `--help` to see the command-line options.
 For example, to run Rastrigin with four GWO islands, two HO islands, and one WOA island:
 
 ```bash
-./bin/parallel_islands --function 3 --agents 40 --generations 50 \
+./bin/parallel_islands --function 3 --gwo-agents 40 --ho-agents 30 --woa-agents 20 --generations 50 \
   --migration-rate 5 --reconfiguration-rate 15 --gwo 4 --ho 2 --woa 1 \
   --gwo-iterations 100 --ho-iterations 80 --woa-iterations 120
 ```
@@ -50,13 +50,15 @@ case-sensitive strings.
 | Option | Default | Description |
 |---|---:|---|
 | `--function`, `-f` | `1` | Benchmark function number, from 1 to 14. See the function list below. |
-| `--agents`, `-a` | `30` | Population size (number of candidate solutions) in each island. |
 | `--generations`, `-g` | `100` | Number of parallel-island generations to run. |
 | `--migration-rate` | `10` | Migration interval in generations. For example, `10` migrates at generations 10, 20, and so on. |
 | `--reconfiguration-rate` | `10` | Reconfiguration interval in generations. Reconfiguration is attempted at each interval when the selected policy allows it. |
 | `--gwo` | `1` | Number of islands initialized with Grey Wolf Optimizer (GWO). |
 | `--ho` | `1` | Number of islands initialized with Hippo Optimizer (HO). |
 | `--woa` | `1` | Number of islands initialized with Whale Optimization Algorithm (WOA). |
+| `--gwo-agents` | `30` | Number of candidate solutions (agents) in each GWO island. |
+| `--ho-agents` | `30` | Number of candidate solutions (agents) in each HO island. |
+| `--woa-agents` | `30` | Number of candidate solutions (agents) in each WOA island. |
 | `--gwo-iterations` | `60` | Maximum optimizer iterations for each GWO island. |
 | `--ho-iterations` | `60` | Maximum optimizer iterations for each HO island. |
 | `--woa-iterations` | `60` | Maximum optimizer iterations for each WOA island. |
@@ -66,16 +68,18 @@ case-sensitive strings.
 | `--reconfiguration` | `stagnated` | Reconfiguration policy: `stagnated` changes an island's optimizer when it stagnates; `none` disables optimizer reconfiguration. |
 | `--reconfiguration-choice` | `best` | Chooses the optimizer to use for reconfiguration. `best` takes it from the island with the best fitness. |
 
-At least one optimizer island is required. `--agents`, `--generations`, and all three optimizer
-iteration values must be positive. `--generations` controls how many times the island runner
-advances the islands; each `--*-iterations` option sets the maximum-iteration value used to create
-islands of that optimizer type.
+At least one optimizer island is required. For each optimizer type with a nonzero island count,
+its agent count must be positive. `--generations` and all three optimizer iteration values must
+also be positive. Agent counts set the population size in each island of the corresponding type.
+`--generations` controls how many times the island runner advances the islands; each
+`--*-iterations` option sets the maximum-iteration value used to create islands of that optimizer
+type.
 
 ### Benchmark functions
 
 The `--function` number selects the objective function to minimize. Each function has a fixed
-dimension and search bounds in the implementation; `--agents` changes population size, not the
-function dimension.
+dimension and search bounds in the implementation; the `--gwo-agents`, `--ho-agents`, and
+`--woa-agents` options set population size, not the function dimension.
 
 | Number | Function | Dimensions and search bounds | Description |
 |---:|---|---|---|
