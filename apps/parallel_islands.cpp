@@ -44,6 +44,18 @@ main(int argc, char **argv) {
         .help("number of WOA optimizers to create")
         .default_value(size_t{1})
         .scan<'i', size_t>();
+    parser.add_argument("--gwo-iterations")
+        .help("maximum iterations for each GWO optimizer")
+        .default_value(size_t{60})
+        .scan<'i', size_t>();
+    parser.add_argument("--ho-iterations")
+        .help("maximum iterations for each HO optimizer")
+        .default_value(size_t{60})
+        .scan<'i', size_t>();
+    parser.add_argument("--woa-iterations")
+        .help("maximum iterations for each WOA optimizer")
+        .default_value(size_t{60})
+        .scan<'i', size_t>();
     parser.add_argument("--topology")
         .help("island topology: graph or tree")
         .default_value(std::string("graph"));
@@ -75,6 +87,9 @@ main(int argc, char **argv) {
     const size_t n_gwo = parser.get<size_t>("--gwo");
     const size_t n_ho = parser.get<size_t>("--ho");
     const size_t n_woa = parser.get<size_t>("--woa");
+    const size_t gwo_iterations = parser.get<size_t>("--gwo-iterations");
+    const size_t ho_iterations = parser.get<size_t>("--ho-iterations");
+    const size_t woa_iterations = parser.get<size_t>("--woa-iterations");
     const auto topology = parser.get<std::string>("--topology");
     const auto selection = parser.get<std::string>("--selection");
     const auto replacement = parser.get<std::string>("--replacement");
@@ -82,9 +97,9 @@ main(int argc, char **argv) {
     const auto reconfiguration_choice = parser.get<std::string>("--reconfiguration-choice");
 
     if (function_type < 1 || function_type > 14 || n_agents == 0 || n_generations == 0 ||
-        n_gwo + n_ho + n_woa == 0) {
-        std::cerr << "Function must be 1-14, agents and generations must be positive, and at least one "
-                     "optimizer is required.\n";
+        n_gwo + n_ho + n_woa == 0 || gwo_iterations == 0 || ho_iterations == 0 || woa_iterations == 0) {
+        std::cerr << "Function must be 1-14; agents, generations, and optimizer iterations must be positive; "
+                     "and at least one optimizer is required.\n";
         return 1;
     }
     if ((topology != "graph" && topology != "tree") || selection != "bwr" || replacement != "worst" ||
@@ -94,18 +109,17 @@ main(int argc, char **argv) {
     }
 
     const size_t island_count = n_gwo + n_ho + n_woa;
-    constexpr size_t max_iterations = 60;
     std::vector<HomogeneousIsland> islands;
     islands.reserve(island_count);
-    auto add_islands = [&](int optimizer_type, size_t count) {
+    auto add_islands = [&](int optimizer_type, size_t count, size_t max_iterations) {
         for (size_t i = 0; i < count; ++i) {
             islands.emplace_back(OptimizerFactory::create(optimizer_type, n_agents, max_iterations,
                                                           BenchmarkFunctionFactory::create(function_type)));
         }
     };
-    add_islands(GWO, n_gwo);
-    add_islands(HO, n_ho);
-    add_islands(WOA, n_woa);
+    add_islands(GWO, n_gwo, gwo_iterations);
+    add_islands(HO, n_ho, ho_iterations);
+    add_islands(WOA, n_woa, woa_iterations);
 
     std::unique_ptr<TopologyPolicyInterface> topology_policy;
     if (topology == "graph") {

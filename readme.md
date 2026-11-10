@@ -32,14 +32,16 @@ Run the parallel-islands application with defaults:
 ```
 
 The default run uses Sphere (function 1), 30 agents per island, 100 generations, migration and
-reconfiguration every 10 generations, and one island for each optimizer. Since this runs an
+reconfiguration every 10 generations, one island for each optimizer, and 60 optimizer iterations
+for each type. Since this runs an
 optimization, it may take a while. Use `--help` to see the command-line options.
 
 For example, to run Rastrigin with four GWO islands, two HO islands, and one WOA island:
 
 ```bash
 ./bin/parallel_islands --function 3 --agents 40 --generations 50 \
-  --migration-rate 5 --reconfiguration-rate 15 --gwo 4 --ho 2 --woa 1
+  --migration-rate 5 --reconfiguration-rate 15 --gwo 4 --ho 2 --woa 1 \
+  --gwo-iterations 100 --ho-iterations 80 --woa-iterations 120
 ```
 
 Each option is described below. Function and optimizer counts are numeric; policy values are
@@ -55,15 +57,19 @@ case-sensitive strings.
 | `--gwo` | `1` | Number of islands initialized with Grey Wolf Optimizer (GWO). |
 | `--ho` | `1` | Number of islands initialized with Hippo Optimizer (HO). |
 | `--woa` | `1` | Number of islands initialized with Whale Optimization Algorithm (WOA). |
+| `--gwo-iterations` | `60` | Maximum optimizer iterations for each GWO island. |
+| `--ho-iterations` | `60` | Maximum optimizer iterations for each HO island. |
+| `--woa-iterations` | `60` | Maximum optimizer iterations for each WOA island. |
 | `--topology` | `graph` | Island connections: `graph` connects every island to every other island; `tree` connects islands in a binary-tree arrangement. |
 | `--selection` | `bwr` | Migrant selection policy. `bwr` selects the best, worst, and one random candidate from the migration pool. |
 | `--replacement` | `worst` | Island replacement policy. `worst` replaces the receiving island's worst candidates with migrants. |
 | `--reconfiguration` | `stagnated` | Reconfiguration policy: `stagnated` changes an island's optimizer when it stagnates; `none` disables optimizer reconfiguration. |
 | `--reconfiguration-choice` | `best` | Chooses the optimizer to use for reconfiguration. `best` takes it from the island with the best fitness. |
 
-At least one optimizer island is required. `--agents` and `--generations` must be positive.
-The optimizer's internal maximum-iteration setting is currently fixed at 60 in the application;
-it is separate from `--generations`.
+At least one optimizer island is required. `--agents`, `--generations`, and all three optimizer
+iteration values must be positive. `--generations` controls how many times the island runner
+advances the islands; each `--*-iterations` option sets the maximum-iteration value used to create
+islands of that optimizer type.
 
 ### Benchmark functions
 
