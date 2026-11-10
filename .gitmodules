@@ -4,7 +4,6 @@
 [submodule "third_party/argparse"]
 	path = third_party/argparse
 	url = https://github.com/p-ranav/argparse.git
-
 [submodule "thread-pool"]
 	path = third_party/thread-pool
 	url = git@github.com:bshoshany/thread-pool.git
