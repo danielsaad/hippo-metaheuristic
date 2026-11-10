@@ -1,0 +1,3 @@
+Checks: '-*,readability-operators-representation'
+CheckOptions:
+  readability-operators-representation.BinaryOperators: 'and;or;not'

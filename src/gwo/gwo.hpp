@@ -3,12 +3,15 @@
 #include "core/optimizer.hpp"
 #include "core/optimizer_factory.hpp"
 #include "ho/hippo_random.hpp"
+#include <stdexcept>
 
 class Gwo : public OptimizerBase {
   private:
     std::vector<std::vector<double>> population_;
     std::vector<double> alpha_pos_, beta_pos_, delta_pos_;
-    double alpha_score_, beta_score_, delta_score_;
+    double alpha_score_ = std::numeric_limits<double>::max();
+    double beta_score_ = std::numeric_limits<double>::max();
+    double delta_score_ = std::numeric_limits<double>::max();
     uint32_t n_dimension;
     double lowerbound_, upperbound_;
     std::vector<double> lowerbound_vector, upperbound_vector;
@@ -34,8 +37,19 @@ class Gwo : public OptimizerBase {
     virtual void
     set_population_with_fitness(const std::vector<std::vector<double>> &population,
                                 const std::vector<double> &fitness) override {
+        if (population.size() != fitness.size()) {
+            throw std::invalid_argument("GWO population and fitness sizes must match");
+        }
+        for (const auto &agent : population) {
+            if (agent.size() != n_dimension) {
+                throw std::invalid_argument("GWO population agents must match the problem dimension");
+            }
+        }
+        n_agents_ = static_cast<uint32_t>(population.size());
         population_ = population;
         fitness_vector_ = fitness;
+        alpha_score_ = beta_score_ = delta_score_ = std::numeric_limits<double>::max();
+        alpha_pos_ = beta_pos_ = delta_pos_ = vector<double>(n_dimension, 0.0);
     }
 
     virtual std::tuple<std::vector<std::vector<double>>, std::vector<double>>
@@ -52,6 +66,8 @@ class Gwo : public OptimizerBase {
     run(bool initialize_flag = true) override {
         if (initialize_flag) {
             initialize_population();
+        } else if (population_.size() != n_agents_ || fitness_vector_.size() != n_agents_) {
+            throw std::logic_error("GWO must receive a complete population before run(false)");
         }
         // Put wolves back in the search space if they go out of bounds
         for (uint32_t it = 0; it < max_iterations_; it++) {
