@@ -2,7 +2,7 @@
 #define GWO_HPP
 #include "core/optimizer.hpp"
 #include "core/optimizer_factory.hpp"
-#include "ho/hippo_random.hpp"
+#include "random/random_gen.hpp"
 #include <algorithm>
 #include <limits>
 #include <numeric>
@@ -19,6 +19,7 @@ class Gwo : public OptimizerBase {
     double lowerbound_, upperbound_;
     std::vector<double> lowerbound_vector, upperbound_vector;
     std::vector<double> fitness_vector_;
+    random_gen::Rng rng_;
 
   public:
     Gwo(uint32_t n_agents, uint32_t max_iterations, std::unique_ptr<ProblemBase> objective_function)
@@ -86,6 +87,7 @@ class Gwo : public OptimizerBase {
 
     virtual void
     run(bool initialize_flag = true) override {
+        auto random_dist = std::uniform_real_distribution<double>(0.0, 1.0);
         if (initialize_flag) {
             initialize_population();
         } else if (population_.size() != n_agents_ or fitness_vector_.size() != n_agents_) {
@@ -116,22 +118,22 @@ class Gwo : public OptimizerBase {
             double a = 2.0 - it * (2.0 / max_iterations_);
             for (uint32_t i = 0; i < n_agents_; i++) {
                 for (size_t j = 0; j < n_dimension; j++) {
-                    double r1 = UniformDist<double>(0, 1).generate();
-                    double r2 = UniformDist<double>(0, 1).generate();
+                    double r1 = rng_.rnd(random_dist);
+                    double r2 = rng_.rnd(random_dist);
                     double A1 = 2 * a * r1 - a;
                     double C1 = 2 * r2;
                     double D_alpha = std::abs(C1 * alpha_pos_[j] - population_[i][j]);
                     double X1 = alpha_pos_[j] - A1 * D_alpha;
 
-                    r1 = UniformDist<double>(0, 1).generate();
-                    r2 = UniformDist<double>(0, 1).generate();
+                    r1 = rng_.rnd(random_dist);
+                    r2 = rng_.rnd(random_dist);
                     double A2 = 2 * a * r1 - a;
                     double C2 = 2 * r2;
                     double D_beta = std::abs(C2 * beta_pos_[j] - population_[i][j]);
                     double X2 = beta_pos_[j] - A2 * D_beta;
 
-                    r1 = UniformDist<double>(0, 1).generate();
-                    r2 = UniformDist<double>(0, 1).generate();
+                    r1 = rng_.rnd(random_dist);
+                    r2 = rng_.rnd(random_dist);
                     double A3 = 2 * a * r1 - a;
                     double C3 = 2 * r2;
                     double D_delta = std::abs(C3 * delta_pos_[j] - population_[i][j]);
@@ -148,13 +150,14 @@ class Gwo : public OptimizerBase {
   private:
     void
     initialize_population() {
+        auto random_dist = std::uniform_real_distribution<double>(0.0, 1.0);
         fitness_vector_.assign(n_agents_, std::numeric_limits<double>::max());
         alpha_score_ = beta_score_ = delta_score_ = std::numeric_limits<double>::max();
         alpha_pos_ = beta_pos_ = delta_pos_ = vector<double>(n_dimension, 0.0);
         population_.assign(n_agents_, vector<double>(n_dimension, 0.0));
         for (uint32_t i = 0; i < n_agents_; i++) {
             for (uint32_t j = 0; j < n_dimension; j++) {
-                population_[i][j] = lowerbound_vector[j] + UniformDist<double>(0, 1).generate() *
+                population_[i][j] = lowerbound_vector[j] + rng_.rnd(random_dist) *
                                                                (upperbound_vector[j] - lowerbound_vector[j]);
             }
         }

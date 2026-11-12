@@ -49,7 +49,7 @@ ParallelIslandRunner::run() {
                 islands_[i].best_fitness_ = best_fitness;
             }
             islands_[i].optimizer_->update_best_solution(islands_[i].best_solution_,
-                                                        islands_[i].best_fitness_);
+                                                         islands_[i].best_fitness_);
             islands_[i].convergence_curve_.push_back(islands_[i].best_fitness_);
             islands_[i].optimizer_history_.push_back(optimizer_id);
             std::println("Thread {} fitness {} optimizer {}", i, islands_[i].best_fitness_, optimizer_id);
@@ -102,7 +102,6 @@ ParallelIslandRunner::run() {
                 manager_.replace_individuals(islands_[i], p, f);
             }
         }
-
     }
 }
 
@@ -126,7 +125,11 @@ ParallelIslandRunner::save_data() {
         row.push_back(std::to_string(gen));
         for (size_t i = 0; i < n_threads_; i++) {
             row.push_back(std::to_string(islands_[i].optimizer_history_[gen]));
-            row.push_back(std::to_string(islands_[i].convergence_curve_[gen]));
+            std::ostringstream oss;
+            oss << std::setprecision(std::numeric_limits<double>::max_digits10)
+                << islands_[i].convergence_curve_[gen];
+            std::string s = oss.str();
+            row.push_back(s);
         }
         doc.SetRow(gen, row);
     }
